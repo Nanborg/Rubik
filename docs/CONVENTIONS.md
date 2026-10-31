@@ -4,21 +4,24 @@ Seulement ce qu'on doit **partager**. Le reste : voir [SUJET.md](SUJET.md) et [C
 
 ## 1. Le lien
 
-- Module : `rubik_core`
-- Une fonction : `solve(scramble: str) -> str`
-- Entrée : le mélange tel quel, ex. `"F R U2 B' L' D'"`
-- Sortie : la solution, mouvements séparés par 1 espace
-- Déjà résolu → `""`
+- Le C++ est un **exécutable** : `./rubik_engine` (fait par `make`).
+- Python le lance avec `subprocess`. Aucune bibliothèque externe, ni côté C++ ni côté Python.
+- Appel : `./rubik_engine "F R U2 B' L' D'"` (le mélange en **un seul argument**)
+- Sortie (stdout) : la solution, mouvements séparés par 1 espace, fin avec `\n`
+- Déjà résolu → une ligne vide
 - **1 seul appel** par résolution
+- Option interne : `./rubik_engine --build-tables` (appelée par `make`, crée les tables)
 
 ## 2. Erreurs
 
-| C++ lance | Python reçoit |
-|---|---|
-| `std::invalid_argument` | `ValueError` |
-| `std::runtime_error` | `RuntimeError` |
+| Code de retour du C++ | Sens | Stderr |
+|---|---|---|
+| `0` | ok | rien |
+| `1` | mélange invalide | `Error: <message>` |
+| `2` | erreur interne (tables manquantes, bug) | `Error: <message>` |
 
-Python affiche `Error: ...` sur stderr, code 1.
+Python relaie le message `Error: ...` sur stderr et sort avec le code `1`.
+Le moteur C++ revalide le mélange : il ne fait pas confiance à Python.
 
 ## 3. Le cube (Kociemba)
 
@@ -39,6 +42,7 @@ Chiffres identiques des deux côtés.
 ## 4. Tests croisés
 
 - Python a son **propre** simulateur (pas de code partagé avec le C++).
+- Il sert **pendant le projet** et dans les tests. `./rubik` ne l'appelle pas (rendu rapide).
 - Fichier commun : `data/vectors/moves.txt`
   - créé par Python (`python/gen_vectors.py`, graine `42`)
   - lu par un test C++
@@ -48,9 +52,13 @@ Chiffres identiques des deux côtés.
 ## 5. Fichiers
 
 - Le C++ marche **sans Python** (`cpp/tests/*.cpp`).
-- Tables dans `data/tables/` (non commitées), dossier changeable via `RUBIK_TABLES_DIR`.
+- Tables : **créées par `make`**, jamais au lancement de `./rubik`.
+- Elles sont dans `data/tables/` (non commitées).
+- `./rubik` les **charge seulement**. Si elles manquent : erreur « lancez make ».
+- Pourquoi : chaque `./rubik` est un nouveau processus, et il doit tenir 3 s.
 - Nouveau `.cpp` → `ENGINE_SRCS` (Makefile). Nouveau test C++ → `CPP_TESTS`.
-- `rubik_core*.so` : fait par `make`, jamais commité.
+- `rubik_engine` : fait par `make`, jamais commité.
+- `python/solver.py` : solveur Python **d'apprentissage**, même algorithme. Hors rendu, jamais appelé par `./rubik`.
 
 ## 6. Qui touche quoi
 

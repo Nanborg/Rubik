@@ -7,7 +7,7 @@
 - [ ] Le dépôt Git existe et correspond au projet.
 - [ ] Pas de triche : chacun sait **expliquer le code**.
 - [ ] Fichier `author` présent.
-- [ ] Chaque bibliothèque utilisée est justifiée (pybind11 : lien Python ↔ C++).
+- [ ] Chaque bibliothèque utilisée est justifiée (aucune : bibliothèque standard seulement).
 
 ## Partie obligatoire
 
@@ -46,7 +46,7 @@ Option bonus = argument qui commence par `-`.
 
 ## Avant la soutenance (à tester nous-mêmes)
 
-- [ ] Tout cloner dans un dossier vide, puis `make venv`, `make`, `./rubik "F R U2 B' L' D'"`.
+- [ ] Tout cloner dans un dossier vide, puis `make`, `./rubik "F R U2 B' L' D'"`.
 - [ ] Les erreurs : aucun crash, aucune trace Python.
 - [ ] Mélanges de 1 à 40 mouvements, tous résolus.
 - [ ] Superflip résolu en un temps normal.
