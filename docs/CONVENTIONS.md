@@ -49,6 +49,8 @@ Sortie dans ces cas : une ligne vide, code 0.
 
 Le parsing existe **en Python et en C++**, avec la même règle.
 
+**Options bonus :** un argument qui commence par `-` est réservé aux bonus. Tant qu'ils n'existent pas : erreur.
+
 ---
 
 ## 3. Sortie

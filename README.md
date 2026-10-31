@@ -22,8 +22,9 @@ Seule la **structure** existe. Les fichiers sont vides (`TODO`).
 
 ## Lire d'abord
 
-1. [docs/CONVENTIONS.md](docs/CONVENTIONS.md) → les règles fixes
-2. [docs/CHECKLIST.md](docs/CHECKLIST.md) → les tâches
+1. [docs/SUJET.md](docs/SUJET.md) → le sujet en résumé
+2. [docs/CONVENTIONS.md](docs/CONVENTIONS.md) → les règles fixes
+3. [docs/CHECKLIST.md](docs/CHECKLIST.md) → les tâches
 
 ## Dossiers
 
