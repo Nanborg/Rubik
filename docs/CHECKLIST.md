@@ -101,8 +101,8 @@ Chacun code **sa propre version** du cube. Pas de code partagé.
 
 **Ensemble**
 - [ ] Tester depuis un dossier **vide** : `git clone`, `make venv`, `make`, `./rubik`.
-- [ ] Tester sur la machine d'évaluation.
+- [ ] Tester sur la machine de la soutenance.
 - [ ] Mettre à jour le `README.md` (retirer « seule la structure existe »).
 - [ ] Documenter l'algorithme (simple, avec schémas).
-- [ ] Vérifier avec [POINTS_A_VERIFIER.md](POINTS_A_VERIFIER.md) (la fiche d'évaluation).
+- [ ] Vérifier avec [POINTS_A_VERIFIER.md](POINTS_A_VERIFIER.md).
 - [ ] Chacun s'entraîne à **expliquer tout l'algorithme**.
