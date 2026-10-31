@@ -104,6 +104,5 @@ Chacun code **sa propre version** du cube. Pas de code partagé.
 - [ ] Tester sur la machine d'évaluation.
 - [ ] Mettre à jour le `README.md` (retirer « seule la structure existe »).
 - [ ] Documenter l'algorithme (simple, avec schémas).
-- [ ] Ajouter le login de chacun dans le fichier `author`.
 - [ ] Vérifier avec [POINTS_A_VERIFIER.md](POINTS_A_VERIFIER.md) (la fiche d'évaluation).
 - [ ] Chacun s'entraîne à **expliquer tout l'algorithme**.
