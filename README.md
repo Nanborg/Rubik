@@ -32,7 +32,7 @@ Seule la **structure** existe. Les fichiers sont vides (`TODO`).
 | Dossier | Rôle | Qui |
 |---|---|---|
 | `rubik` | point d'entrée | Python |
-| `python/` | CLI, vérificateur, benchmark | Python |
+| `python/` | CLI, vérificateur, benchmark, `solver.py` (apprentissage) | Python |
 | `tests/` | tests Python | Python |
 | `cpp/` | moteur de résolution | C++ |
 | `data/tables/` | tables générées (non commitées) | C++ |
@@ -43,17 +43,35 @@ Seule la **structure** existe. Les fichiers sont vides (`TODO`).
 ```sh
 git clone git@github.com:Nanborg/Rubik.git
 cd Rubik
-make venv
 make
 ```
 
-Besoin de : Ubuntu 24.04, Python 3.12, `g++`, `make`.
+Besoin de : Linux, Python 3 (bibliothèque standard seulement), `g++`, `make`.
+
+## Ordre des opérations
+
+**Une fois**
+- `make` → compile le C++ (`rubik_engine`) et **génère les tables** dans `data/tables/`.
+
+**À chaque `./rubik "..."`** (moins de 3 s)
+1. Python lit et vérifie le mélange.
+2. Python lance `./rubik_engine` (un seul appel).
+3. Le C++ charge les tables.
+4. Le C++ cherche la solution (phase 1 puis phase 2).
+5. Python affiche la solution.
+
+**Pendant le projet, à part**
+- `make test` → tests C++ et Python.
+- `make bench` → moyenne de mouvements et temps le plus lent.
+- `python python/solver.py "..."` → solveur Python d'apprentissage (hors rendu).
+
+**Nettoyage** : `make clean`, `make fclean`, `make re`. Après `fclean`, refaire `make` avant `./rubik`.
 
 ## Commandes
 
 | Commande | Effet |
 |---|---|
-| `make` | compile `rubik_core` |
+| `make` | compile `rubik_engine` et crée les tables |
 | `make test` | lance les tests |
 | `make bench` | mesure vitesse et longueur |
 | `make clean` | supprime `build/` |

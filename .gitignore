@@ -1,8 +1,7 @@
-.venv/
 build/
 __pycache__/
 *.py[cod]
-*.so
+rubik_engine
 *.o
 *~
 *.swp

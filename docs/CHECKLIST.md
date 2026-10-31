@@ -3,13 +3,14 @@
 Suivez les étapes **dans l'ordre**. Cochez quand c'est fini.
 Règles partagées : [CONVENTIONS.md](CONVENTIONS.md). Sujet : [SUJET.md](SUJET.md).
 
-**Plan :** Python = interface + vérification. C++ = moteur de résolution. Lien = `rubik_core.solve()`.
+**Plan :** Python = interface + tests. C++ = tout le calcul. Lien = l'exécutable `./rubik_engine`.
+Le simulateur Python sert pendant le projet, pas dans `./rubik`.
 
 ---
 
 ## Étape 0 — Démarrer (ensemble)
 
-- [ ] Cloner le dépôt, lancer `make venv` puis `make`.
+- [ ] Cloner le dépôt, lancer `make`.
 - [ ] Lire [CONVENTIONS.md](CONVENTIONS.md) ensemble.
 - [ ] Ajouter le PDF du sujet dans `docs/`.
 
@@ -43,6 +44,8 @@ Chacun code **sa propre version** du cube. Pas de code partagé.
 - [ ] `coordinates.cpp` : coordonnées de la phase 1 et de la phase 2.
 - [ ] `tables.cpp` : tables de transition.
 - [ ] `tables.cpp` : tables de pruning.
+- [ ] `make` crée les tables dans `data/tables/` (nouvelle règle du `Makefile`).
+- [ ] `./rubik` les charge seulement, sans les recalculer.
 - [ ] Tests : chaque coordonnée revient bien à l'état d'origine.
 
 ✅ Fini quand : les tables se génèrent et se chargent sans erreur.
@@ -59,6 +62,7 @@ Chacun code **sa propre version** du cube. Pas de code partagé.
 
 **Python**
 - [ ] Aider à tester : mélanges variés, cas difficiles.
+- [ ] *(optionnel, hors rendu)* `python/solver.py` : ton solveur Two-Phase, même algorithme. Lent, pour apprendre et comparer avec le C++.
 
 ✅ Fini quand : tous les mélanges de test sont résolus, **sans Python**.
 
@@ -67,14 +71,16 @@ Chacun code **sa propre version** du cube. Pas de code partagé.
 ## Étape 4 — Brancher Python et C++
 
 **C++**
-- [ ] `bindings.cpp` : exposer `solve(scramble)` avec pybind11.
-- [ ] Convertir les exceptions (voir [CONVENTIONS.md](CONVENTIONS.md)).
+- [ ] `main.cpp` : lire le mélange en argument, afficher la solution (contrat dans [CONVENTIONS.md](CONVENTIONS.md)).
+- [ ] `main.cpp` : option `--build-tables` (appelée par `make`).
+- [ ] Codes de retour : 0 ok, 1 mélange invalide, 2 erreur interne. Message `Error: ...` sur stderr.
 
 **Python**
-- [ ] `main.py` et `rubik` : lire l'argument, appeler `rubik_core.solve`.
-- [ ] Vérifier la solution avec `verifier.py` avant d'afficher.
+- [ ] `main.py` et `rubik` : lire l'argument, lancer `./rubik_engine` avec `subprocess`.
+- [ ] Si `./rubik_engine` est absent : message « lancez make ».
+- [ ] Tests : `mélange + solution` = cube résolu, vérifié par `verifier.py`.
 - [ ] Afficher **uniquement** la solution sur stdout.
-- [ ] Gérer les erreurs : message sur stderr, code 1.
+- [ ] Gérer les erreurs : relayer le message sur stderr, code 1.
 
 ✅ Fini quand : `./rubik "F R U2 B' L' D'"` affiche une solution valide.
 
@@ -85,7 +91,8 @@ Chacun code **sa propre version** du cube. Pas de code partagé.
 **Python**
 - [ ] `benchmark.py` : mélanges reproductibles, longueurs variées.
 - [ ] Mesurer le nombre de mouvements (moyenne).
-- [ ] Mesurer le temps **total** (lancement + tables + recherche).
+- [ ] Mesurer le temps **total** d'un `./rubik` (démarrage + chargement des tables + recherche).
+- [ ] Lancer plusieurs `./rubik` à la suite : chaque temps doit rester < 3 s.
 - [ ] Tester le superflip (voir [POINTS_A_VERIFIER.md](POINTS_A_VERIFIER.md)).
 - [ ] `tests/test_performance.py`.
 
@@ -100,7 +107,7 @@ Chacun code **sa propre version** du cube. Pas de code partagé.
 ## Étape 6 — Livraison
 
 **Ensemble**
-- [ ] Tester depuis un dossier **vide** : `git clone`, `make venv`, `make`, `./rubik`.
+- [ ] Tester depuis un dossier **vide** : `git clone`, `make`, `./rubik`.
 - [ ] Tester sur la machine de la soutenance.
 - [ ] Mettre à jour le `README.md` (retirer « seule la structure existe »).
 - [ ] Documenter l'algorithme (simple, avec schémas).
