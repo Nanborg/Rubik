@@ -1,6 +1,6 @@
-# Rubik — Points à vérifier (fiche d'évaluation)
+# Rubik — Points à vérifier
 
-À relire avant chaque soutenance. Si un point **bloquant** échoue : évaluation arrêtée.
+À relire avant la soutenance. Si un point **bloquant** échoue : on arrête tout.
 
 ## Avant de commencer (bloquant)
 
@@ -21,7 +21,7 @@
 | Distance-20 | superflip (voir ci-dessous) | non |
 
 **Performance :**
-- La fiche demande une moyenne < 150 mouvements.
+- Ces points demandent une moyenne < 150 mouvements.
 - Le sujet demande une moyenne ≤ **50**. On vise 50 (idéal : < 30).
 - Temps : < 2-3 s, **affichage compris**.
 
@@ -42,7 +42,7 @@ Idées bien notées :
 
 Option bonus = argument qui commence par `-`.
 
-Pendant l'évaluation : l'évalué résout un vrai cube (moins de 30-40 s = très impressionnant).
+À la soutenance : on résout un vrai cube (moins de 30-40 s = très impressionnant).
 
 ## Avant la soutenance (à tester nous-mêmes)
 

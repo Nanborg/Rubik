@@ -23,7 +23,7 @@ Seule la **structure** existe. Les fichiers sont vides (`TODO`).
 ## Lire d'abord
 
 1. [docs/SUJET.md](docs/SUJET.md) → le sujet en résumé
-2. [docs/POINTS_A_VERIFIER.md](docs/POINTS_A_VERIFIER.md) → la fiche d'évaluation
+2. [docs/POINTS_A_VERIFIER.md](docs/POINTS_A_VERIFIER.md) → ce qu'on doit vérifier
 3. [docs/CONVENTIONS.md](docs/CONVENTIONS.md) → les règles fixes
 4. [docs/CHECKLIST.md](docs/CHECKLIST.md) → les étapes à suivre
 
