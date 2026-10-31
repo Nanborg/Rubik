@@ -86,6 +86,7 @@ Chacun code **sa propre version** du cube. Pas de code partagé.
 - [ ] `benchmark.py` : mélanges reproductibles, longueurs variées.
 - [ ] Mesurer le nombre de mouvements (moyenne).
 - [ ] Mesurer le temps **total** (lancement + tables + recherche).
+- [ ] Tester le superflip (voir [POINTS_A_VERIFIER.md](POINTS_A_VERIFIER.md)).
 - [ ] `tests/test_performance.py`.
 
 **C++**
@@ -103,5 +104,6 @@ Chacun code **sa propre version** du cube. Pas de code partagé.
 - [ ] Tester sur la machine d'évaluation.
 - [ ] Mettre à jour le `README.md` (retirer « seule la structure existe »).
 - [ ] Documenter l'algorithme (simple, avec schémas).
-- [ ] Vérifier avec la fiche « points à vérifier ».
+- [ ] Ajouter le login de chacun dans le fichier `author`.
+- [ ] Vérifier avec [POINTS_A_VERIFIER.md](POINTS_A_VERIFIER.md) (la fiche d'évaluation).
 - [ ] Chacun s'entraîne à **expliquer tout l'algorithme**.
