@@ -1,199 +1,107 @@
-# Rubik (42) — Architecture et checklist du binôme
+# Rubik — Instructions pas à pas
 
-## 1. Objectif et contraintes
+Suivez les étapes **dans l'ordre**. Cochez quand c'est fini.
+Règles partagées : [CONVENTIONS.md](CONVENTIONS.md). Sujet : [SUJET.md](SUJET.md).
 
-Créer un programme `rubik` qui reçoit en argument une séquence de mélange d'un Rubik's Cube 3×3×3 et affiche une séquence de résolution en notation officielle (`F R U B L D`, avec les suffixes `'` et `2`).
+**Plan :** Python = interface + vérification. C++ = moteur de résolution. Lien = `rubik_core.solve()`.
 
-**Contraintes du sujet :**
-- Ne pas simplement inverser le mélange.
-- Viser une **moyenne de 50 mouvements** selon la métrique HTM (un quart de tour ou un demi-tour compte pour un mouvement).
-- Répondre en **3 secondes maximum**.
-- Gérer correctement les entrées invalides et les erreurs.
-- Ne pas utiliser de bibliothèque qui résout le cube à votre place.
-- Pouvoir expliquer et justifier l'algorithme retenu.
+---
 
-**Approche retenue :** étudier et réimplémenter un algorithme **Two-Phase** documenté, inspiré de Kociemba, sans réutiliser de solveur prêt à l'emploi.
+## Étape 0 — Démarrer (ensemble)
 
-## 2. Architecture générale
+- [ ] Cloner le dépôt, lancer `make venv` puis `make`.
+- [ ] Lire [CONVENTIONS.md](CONVENTIONS.md) ensemble.
+- [ ] Ajouter le PDF du sujet dans `docs/`.
 
-```text
-$ ./rubik "F R U2 B' L' D'"
-             |
-             v
-+------------------------------------+
-| Python — interface                 |
-| - arguments et validation          |
-| - appel au moteur                  |
-| - vérification et sortie           |
-+------------------------------------+
-             |
-             | rubik_core.solve(scramble)
-             | liaison pybind11
-             v
-+------------------------------------+
-| C++ — moteur autonome              |
-| - représentation du cube           |
-| - mouvements et coordonnées        |
-| - tables de transitions / pruning  |
-| - recherche phase 1 et phase 2     |
-| - optimisation                     |
-+------------------------------------+
-             |
-             v
-    Séquence de résolution
-```
+---
 
-**Principe :** un appel C++ pour une résolution complète, et non un appel Python → C++ à chaque rotation ou nœud exploré. Le moteur C++ doit aussi pouvoir être testé sans Python.
+## Étape 1 — Le cube et les mouvements
 
-## 3. Arborescence proposée
+Chacun code **sa propre version** du cube. Pas de code partagé.
 
-```text
-rubik/
-├── rubik                      # Point d'entrée exécutable
-├── Makefile
-├── pyproject.toml             # Configuration de compilation de l'extension
-├── README.md
-├── python/
-│   ├── main.py                # CLI et affichage
-│   ├── parser.py              # Validation de l'entrée
-│   ├── verifier.py            # Simulateur indépendant
-│   └── benchmark.py           # Mesures de temps et de mouvements
-├── cpp/
-│   ├── include/
-│   │   ├── cube.hpp
-│   │   ├── moves.hpp
-│   │   ├── coordinates.hpp
-│   │   ├── tables.hpp
-│   │   └── solver.hpp
-│   ├── src/
-│   │   ├── cube.cpp
-│   │   ├── moves.cpp
-│   │   ├── coordinates.cpp
-│   │   ├── tables.cpp
-│   │   ├── phase1.cpp
-│   │   ├── phase2.cpp
-│   │   ├── solver.cpp
-│   │   └── bindings.cpp
-│   └── tests/
-│       ├── test_moves.cpp
-│       └── test_solver.cpp
-├── tests/
-│   ├── test_parser.py
-│   ├── test_rotations.py
-│   ├── test_solutions.py
-│   └── test_performance.py
-└── data/
-    └── pruning_tables/       # Tables générées localement
-```
+**Python** (`python/`)
+- [ ] `parser.py` : lire `F R U2 B' L' D'`, refuser le reste (`M E S x y z`, etc.).
+- [ ] `verifier.py` : simuler un cube, appliquer des mouvements.
+- [ ] Tests dans `tests/test_parser.py` et `tests/test_rotations.py`.
 
-L'arborescence est une proposition de conception, pas une exigence du sujet.
+**C++** (`cpp/`)
+- [ ] `cube.hpp/.cpp` : 8 coins, 12 arêtes (position + orientation).
+- [ ] `moves.hpp/.cpp` : les 18 mouvements.
+- [ ] Test dans `cpp/tests/test_moves.cpp`.
 
-## 4. Répartition des responsabilités
+**Ensemble**
+- [ ] Python crée `data/vectors/moves.txt` avec `python/gen_vectors.py`.
+- [ ] Le test C++ relit ce fichier : états identiques.
 
-| Python — Personne A | C++ — Personne B |
-|---|---|
-| Interface CLI et validation | Représentation des 8 coins et 12 arêtes |
-| Intégration du module C++ | Rotations, permutations et orientations |
-| Simulateur de vérification indépendant | Encodage des états et coordonnées |
-| Génération de mélanges et tests | Tables de mouvements et de pruning |
-| Benchmarks et mesure HTM | Recherche Two-Phase |
-| Vérification du résultat et sortie | Optimisation CPU/mémoire |
+✅ Fini quand : Python et C++ donnent **le même cube** pour chaque mélange.
 
-**Équilibrage :** la charge de développement C++ est plus importante. La personne Python prend aussi part à la conception mathématique, aux tests de cohérence et à l'analyse des performances.
+---
 
-## 5. Checklist Python
+## Étape 2 — Coordonnées et tables
 
-### Infrastructure
-- [ ] Créer l'exécutable `rubik` et lire les arguments.
-- [ ] Implémenter le parsing de `F R U B L D` avec `'` et `2`.
-- [ ] Rejeter les mouvements non autorisés (`M`, `E`, `S`, `x`, `y`, `z`).
-- [ ] Intégrer `rubik_core` avec `pybind11`.
+**C++ seul** (Python avance sur l'étape 4)
+- [ ] `coordinates.cpp` : coordonnées de la phase 1 et de la phase 2.
+- [ ] `tables.cpp` : tables de transition.
+- [ ] `tables.cpp` : tables de pruning.
+- [ ] Tests : chaque coordonnée revient bien à l'état d'origine.
 
-### Vérification
-- [ ] Développer un simulateur de cube **indépendant** du moteur C++.
-- [ ] Vérifier que l'application du mélange puis de la solution résout le cube.
-- [ ] Tester les mouvements inverses, doubles et quadruples.
-- [ ] Tester les entrées vides, malformées et les espaces multiples.
+✅ Fini quand : les tables se génèrent et se chargent sans erreur.
 
-### Performance et livraison
-- [ ] Générer des mélanges reproductibles avec différentes longueurs.
-- [ ] Mesurer le nombre de mouvements HTM.
-- [ ] Mesurer le temps total de réponse, y compris le chargement éventuel des tables.
-- [ ] Tester un ensemble suffisamment varié de mélanges.
-- [ ] Garantir que la sortie standard contient uniquement la solution attendue.
+---
 
-## 6. Checklist C++
+## Étape 3 — Le solveur
 
-### Modèle du cube
-- [ ] Représenter les 8 coins et les 12 arêtes.
-- [ ] Gérer les positions et orientations des pièces.
-- [ ] Implémenter les 18 mouvements élémentaires (6 faces × 3 variantes).
-- [ ] Tester les invariants du cube et les rotations.
+**C++**
+- [ ] `phase1.cpp` : recherche IDA* jusqu'au groupe H.
+- [ ] `phase2.cpp` : recherche IDA* pour finir.
+- [ ] `solver.cpp` : enchaîner les deux phases, renvoyer la solution.
+- [ ] Test `cpp/tests/test_solver.cpp` : la solution résout le cube.
 
-### Recherche
-- [ ] Définir les coordonnées d'état de la phase 1.
-- [ ] Définir les coordonnées d'état de la phase 2.
-- [ ] Générer les tables de transitions.
-- [ ] Générer les tables de pruning.
-- [ ] Implémenter IDA* ou une recherche adaptée.
-- [ ] Implémenter l'enchaînement des deux phases.
+**Python**
+- [ ] Aider à tester : mélanges variés, cas difficiles.
 
-### Optimisation et intégration
-- [ ] Réduire les allocations et le coût par état exploré.
-- [ ] Tester les cas difficiles et mesurer les performances.
-- [ ] Exposer `solve(scramble)` via `pybind11`.
-- [ ] Documenter l'algorithme, les conventions et la génération des tables.
+✅ Fini quand : tous les mélanges de test sont résolus, **sans Python**.
 
-## 7. Contrat d'interface
+---
 
-L'API publique minimale proposée est :
+## Étape 4 — Brancher Python et C++
 
-```python
-import rubik_core
+**C++**
+- [ ] `bindings.cpp` : exposer `solve(scramble)` avec pybind11.
+- [ ] Convertir les exceptions (voir [CONVENTIONS.md](CONVENTIONS.md)).
 
-solution: str = rubik_core.solve("R U R' U'")
-print(solution)
-```
+**Python**
+- [ ] `main.py` et `rubik` : lire l'argument, appeler `rubik_core.solve`.
+- [ ] Vérifier la solution avec `verifier.py` avant d'afficher.
+- [ ] Afficher **uniquement** la solution sur stdout.
+- [ ] Gérer les erreurs : message sur stderr, code 1.
 
-**Contrat :**
-- Entrée : chaîne de mélange en notation officielle.
-- Sortie : chaîne de résolution en notation officielle.
-- Erreurs : exceptions Python explicites, converties depuis le C++ si nécessaire.
-- Pas d'appels Python ↔ C++ dans la boucle de recherche.
-- Convention partagée et documentée pour l'ordre des pièces et leurs orientations.
+✅ Fini quand : `./rubik "F R U2 B' L' D'"` affiche une solution valide.
 
-`pybind11` sert uniquement à l'interopérabilité ; vérifier sa disponibilité dans l'environnement d'évaluation et prévoir une compilation reproductible.
+---
 
-## 8. Ordre de développement
+## Étape 5 — Mesurer et améliorer
 
-1. **Conventions communes :** notation, ordre des pièces, orientations, erreurs et API.
-2. **Simulateurs indépendants :** implémentation des mouvements en Python et en C++, puis comparaison automatique.
-3. **Coordonnées et tables :** encodages d'états, transitions, pruning et tests d'invariants.
-4. **Solveur Two-Phase :** correction d'abord, puis amélioration de la longueur des solutions et du temps.
-5. **Intégration :** exposition du solveur C++ à Python après validation autonome.
-6. **Validation finale :** tests massifs, performances, erreurs, installation et démonstration.
+**Python**
+- [ ] `benchmark.py` : mélanges reproductibles, longueurs variées.
+- [ ] Mesurer le nombre de mouvements (moyenne).
+- [ ] Mesurer le temps **total** (lancement + tables + recherche).
+- [ ] `tests/test_performance.py`.
 
-## 9. Critères de validation
+**C++**
+- [ ] Réduire le temps et la mémoire si besoin.
+- [ ] Chercher des solutions plus courtes si le temps le permet.
 
-| Critère | Attendu |
-|---|---|
-| Correction | Tous les mélanges valides testés doivent être résolus |
-| Longueur | Moyenne de **50 mouvements HTM** selon le sujet |
-| Délai | **3 secondes maximum** par réponse |
-| Notation | `F R U B L D` avec `'` et `2` |
-| Méthode | Pas d'inversion directe du mélange |
-| Dépendances | Pas de bibliothèque de résolution prête à l'emploi |
-| Évaluation | Chaque membre sait expliquer l'algorithme |
+✅ Fini quand : moyenne ≤ 50 mouvements et ≤ 3 secondes.
 
-## 10. Risques et décisions à prendre tôt
+---
 
-- **Conventions incompatibles :** fixer dès le départ le repérage des faces, des pièces et des orientations.
-- **Erreurs difficiles à diagnostiquer :** maintenir un simulateur Python indépendant pour comparer les mouvements et les solutions.
-- **Tables volumineuses :** documenter leur génération, leur format et leur chargement.
-- **Dépassement des 3 secondes :** mesurer le temps de bout en bout, pas uniquement la recherche C++.
-- **Dépendance de compilation :** tester le lancement depuis un environnement propre et sur la VM prévue pour l'évaluation.
-- **Charge inégale :** partager la conception de l'algorithme et réserver à Python une vraie responsabilité de validation.
+## Étape 6 — Livraison
 
-## 11. Décision finale
-
-**Architecture retenue :** Python pour l'interface, les tests et la validation ; C++ pour le moteur complet ; `pybind11` comme liaison ; conception mathématique commune. C'est une architecture simple à tester, qui évite les échanges fréquents entre langages pendant la recherche.
+**Ensemble**
+- [ ] Tester depuis un dossier **vide** : `git clone`, `make venv`, `make`, `./rubik`.
+- [ ] Tester sur la machine d'évaluation.
+- [ ] Mettre à jour le `README.md` (retirer « seule la structure existe »).
+- [ ] Documenter l'algorithme (simple, avec schémas).
+- [ ] Vérifier avec la fiche « points à vérifier ».
+- [ ] Chacun s'entraîne à **expliquer tout l'algorithme**.

@@ -24,7 +24,7 @@ Seule la **structure** existe. Les fichiers sont vides (`TODO`).
 
 1. [docs/SUJET.md](docs/SUJET.md) → le sujet en résumé
 2. [docs/CONVENTIONS.md](docs/CONVENTIONS.md) → les règles fixes
-3. [docs/CHECKLIST.md](docs/CHECKLIST.md) → les tâches
+3. [docs/CHECKLIST.md](docs/CHECKLIST.md) → les étapes à suivre
 
 ## Dossiers
 
