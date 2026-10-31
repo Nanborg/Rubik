@@ -1,0 +1,12 @@
+.venv/
+build/
+__pycache__/
+*.py[cod]
+*.so
+*.o
+*~
+*.swp
+*.swo
+data/tables/*
+!data/tables/.gitkeep
+*:Zone.Identifier
