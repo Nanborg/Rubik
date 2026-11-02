@@ -1,2 +1,1 @@
-#!/usr/bin/env python3
-# TODO(python): entry point. Contract: docs/CONVENTIONS.md section 2.
+# TODO(shared): point d’entrée du sujet, déléguer au solver Python.

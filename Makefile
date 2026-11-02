@@ -1,53 +1,22 @@
-NAME = rubik_engine
+PYTHON ?= python3
 
-CXX = c++
-CXXFLAGS = -std=c++17 -O2 -Wall -Wextra -Werror
-INCLUDES = -Icpp/include
+all:
+	$(PYTHON) -m compileall -q common solving rendering tools tests solver.py render.py
 
-# Engine sources (everything except main.cpp). Add new C++ files here.
-ENGINE_SRCS = cube.cpp moves.cpp coordinates.cpp tables.cpp phase1.cpp phase2.cpp solver.cpp
-ENGINE_OBJS = $(addprefix build/,$(ENGINE_SRCS:.cpp=.o))
+test: all
+	$(PYTHON) -m unittest discover -s tests -v
 
-TABLES_READY = data/tables/.ready
-
-all: $(NAME) $(TABLES_READY)
-
-$(NAME): $(ENGINE_OBJS) build/main.o
-	$(CXX) $(CXXFLAGS) $^ -o $@
-
-# Tables are built once here, never when ./rubik runs.
-$(TABLES_READY): $(NAME)
-	./$(NAME) --build-tables
-	@touch $@
-
-build/%.o: cpp/src/%.cpp $(wildcard cpp/include/*.hpp)
-	@mkdir -p build
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
-
-build/%: cpp/tests/%.cpp $(ENGINE_OBJS)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
-
-# Standalone C++ tests (cpp/tests/test_*.cpp, each with its own main). Add the binaries here.
-CPP_TESTS =
-
-test-cpp: $(addprefix build/,$(CPP_TESTS))
-	@for t in $(CPP_TESTS); do ./build/$$t || exit 1; done
-
-test-py: all
-	python3 -m unittest discover -s tests -v
-
-test: test-cpp test-py
-
-bench: all
-	python3 python/benchmark.py
+bench:
+	$(PYTHON) tools/benchmark.py
 
 clean:
-	rm -rf build
+	find common solving rendering tools tests -type d -name __pycache__ -prune -exec rm -rf {} +
+	rm -rf __pycache__
 
 fclean: clean
-	rm -f $(NAME)
-	find data/tables -type f ! -name .gitkeep -delete
 
-re: fclean all
+re:
+	$(MAKE) fclean
+	$(MAKE) all
 
-.PHONY: all test test-cpp test-py bench clean fclean re
+.PHONY: all test bench clean fclean re

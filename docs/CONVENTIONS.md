@@ -1,75 +1,136 @@
-# Rubik — Contrat Python ↔ C++
+# Rubik — Contrat solver / renderer Python
 
-Seulement ce qu'on doit **partager**. Le reste : voir [SUJET.md](SUJET.md) et [CHECKLIST.md](CHECKLIST.md).
+Contrat proposé pour votre travail à deux ; les détails sont à valider ensemble.
+Aucune des API décrites n’est encore implémentée. Les exemples sont documentaires.
 
-## 1. Le lien
+## Répartition
 
-- Le C++ est un **exécutable** : `./rubik_engine` (fait par `make`).
-- Python le lance avec `subprocess`. Aucune bibliothèque externe, ni côté C++ ni côté Python.
-- Appel : `./rubik_engine "F R U2 B' L' D'"` (le mélange en **un seul argument**)
-- Sortie (stdout) : la solution, mouvements séparés par 1 espace, fin avec `\n`
-- Déjà résolu → une ligne vide
-- **1 seul appel** par résolution
-- Option interne : `./rubik_engine --build-tables` (appelée par `make`, crée les tables)
+neon_05 développe `solving/`. nicolsan développe `rendering/`.
+`common/`, les interfaces, les tests d'intégration et les documents se décident
+ensemble. Le solver fonctionne sans importer le renderer ou une bibliothèque 3D.
 
-## 2. Erreurs
+## Entrées et sorties
 
-| Code de retour du C++ | Sens | Stderr |
-|---|---|---|
-| `0` | ok | rien |
-| `1` | mélange invalide | `Error: <message>` |
-| `2` | erreur interne (tables manquantes, bug) | `Error: <message>` |
+- `./solver.py "<mélange>"` et `./rubik "<mélange>"` ont le même comportement.
+- Entrée : un argument contenant le mélange, appliqué à un cube résolu.
+- Sortie standard : mouvements de solution séparés par un espace, puis newline.
+- Cube déjà résolu : ligne vide, une fois le solver implémenté.
+- Erreurs et diagnostics sur stderr ; aucun log sur stdout.
+- Codes : 0 succès, 1 entrée invalide, 2 erreur interne ou fonction non implémentée.
+- Ne pas renvoyer simplement l'inverse du mélange.
 
-Python relaie le message `Error: ...` sur stderr et sort avec le code `1`.
-Le moteur C++ revalide le mélange : il ne fait pas confiance à Python.
+Renderer :
+```sh
+./render.py "<mélange initial>" --output 3d --speed 1 --delay 0 < solution.txt
+./render.py --state initial.json --output logs < solution.txt
+```
 
-## 3. Le cube (Kociemba)
+Le mélange initial et `--state` sont exclusifs. `--state` désigne un fichier
+contenant l'état cubie décrit plus bas. Les mouvements de solution viennent de
+stdin, pas du mélange initial. Le renderer n'appelle pas le solver.
+`--speed` = mouvements par seconde, strictement positif ;
+`--delay` = attente initiale en secondes, positive ou nulle.
+`--output 3d` ouvre la scène ; `--output logs` sert au débogage sans fenêtre.
+Ces deux sorties restent à implémenter.
 
-Chiffres identiques des deux côtés.
+## Notation et repère commun
 
-- Faces : `U R F D L B` → 0 à 5
-- Coins : `URF UFL ULB UBR DFR DLF DBL DRB` → 0 à 7
-- Arêtes : `UR UF UL UB DR DF DL DB FR FL BL BR` → 0 à 11
-- Mouvement : `face * 3 + (puissance - 1)` → 0 à 17
-  - puissance 1 = horaire, 2 = demi-tour, 3 = anti-horaire
-  - ordre : `U U2 U' R R2 R' F F2 F' D D2 D' L L2 L' B B2 B'`
-- État : `cp` `co` `ep` `eo`
-  - `cp`/`ep` : quelle pièce est à la position i
-  - `co` : 0, 1, 2 (coins) — `eo` : 0, 1 (arêtes)
-- `a * b` = « a puis b »
-- Référence : https://kociemba.org/math/cubielevel.htm
+- Seulement `U R F D L B`, éventuellement suivis de `2` ou de `'`.
+- Un quart de tour est horaire en regardant la face depuis l'extérieur.
+- Un demi-tour compte pour un mouvement HTM.
+- `M E S x y z`, suffixes multiples et autres notations sont refusés.
+- Le déplacement de la caméra ne modifie pas le repère logique du cube.
+- Les formules CFOP utilisant des rotations globales ou des tranches doivent
+  être adaptées à la notation autorisée avant usage/sortie.
 
-## 4. Tests croisés
+| Face | Position | Couleur résolue |
+| --- | --- | --- |
+| U | haut (+Y) | WHITE |
+| D | bas (-Y) | YELLOW |
+| F | devant (+Z) | GREEN |
+| B | derrière (-Z) | BLUE |
+| R | droite (+X) | RED |
+| L | gauche (-X) | ORANGE |
 
-- Python a son **propre** simulateur (pas de code partagé avec le C++).
-- Il sert **pendant le projet** et dans les tests. `./rubik` ne l'appelle pas (rendu rapide).
-- Fichier commun : `data/vectors/moves.txt`
-  - créé par Python (`python/gen_vectors.py`, graine `42`)
-  - lu par un test C++
-  - ligne : `scramble|cp|co|ep|eo`
-- Vérité finale : `mélange + solution` = cube résolu, selon Python.
+Le repère 3D est direct : X vers la droite, Y vers le haut, Z vers l'avant.
 
-## 5. Fichiers
+## État du cube : deux listes ordonnées
 
-- Le C++ marche **sans Python** (`cpp/tests/*.cpp`).
-- Tables : **créées par `make`**, jamais au lancement de `./rubik`.
-- Elles sont dans `data/tables/` (non commitées).
-- `./rubik` les **charge seulement**. Si elles manquent : erreur « lancez make ».
-- Pourquoi : chaque `./rubik` est un nouveau processus, et il doit tenir 3 s.
-- Nouveau `.cpp` → `ENGINE_SRCS` (Makefile). Nouveau test C++ → `CPP_TESTS`.
-- `rubik_engine` : fait par `make`, jamais commité.
-- `python/solver.py` : solveur Python **d'apprentissage**, même algorithme. Hors rendu, jamais appelé par `./rubik`.
+`Color` est une Enum partagée, pas une couleur propre à une bibliothèque 3D.
+`CubeState` contient `edges` (12 tuples de deux couleurs) et `corners`
+(8 tuples de trois couleurs). Les six centres sont fixes et implicites.
 
-## 6. Qui touche quoi
+L'index décrit **la position actuelle**, pas l'identité d'une pièce.
 
-| Python | C++ |
-|---|---|
-| `rubik`, `python/`, `tests/` | `cpp/`, `data/tables/` |
+- Arêtes : `UR UF UL UB DR DF DL DB FR FL BL BR`.
+- Coins : `URF UFL ULB UBR DFR DLF DBL DRB`.
 
-`Makefile`, `README.md`, `docs/` : on se relit.
+Dans chaque tuple, l'ordre suit les lettres de sa position :
+`edges[1] = (WHITE, GREEN)` signifie WHITE sur U, GREEN sur F à la position UF.
+`corners[0] = (WHITE, RED, GREEN)` signifie WHITE sur U, RED sur R,
+GREEN sur F à la position URF.
 
-## 7. Git
+**Ne pas trier les couleurs des tuples** : leur ordre porte l'orientation.
+Une simple collection de pièces sans positions ni orientation ne suffit pas.
+Les deux listes correspondent à l'idée « 12 arêtes + 8 coins », en séparant
+clairement leurs tailles et leur rôle.
 
-- `main` stable. Branches `py/<sujet>` et `cpp/<sujet>`.
-- Merge par PR, relue par l'autre.
-- Commits en anglais, courts : `Add move parsing`.
+```python
+from common.state import CubeState
+
+state = CubeState.solved()
+# state.edges[1] == (Color.WHITE, Color.GREEN)
+# state.corners[0] == (Color.WHITE, Color.RED, Color.GREEN)
+```
+
+Le modèle, l'état résolu, la validation physique et les rotations
+sont tous à implémenter dans le modèle commun.
+
+## Format JSON des états
+
+À implémenter pour `--state` et les fixtures d'intégration :
+objet avec `version: 1`, `edges` et `corners`.
+Les couleurs sont les valeurs textuelles de l'Enum, par exemple `"WHITE"`.
+Les listes et tuples respectent exactement les ordres ci-dessus.
+
+Valider : longueurs, couleurs connues, inventaire des pièces, absence de doublons,
+orientation des arêtes et coins, et parité compatible des permutations.
+Un état physiquement impossible doit être rejeté avant l'animation.
+L'import/export JSON est à implémenter, comme le reste du modèle.
+
+## API prévue
+
+- `parse_moves(text) -> tuple[str, ...]` : parsing commun, à implémenter.
+- `solve(moves) -> list[str]` : solution CFOP ; reçoit le mélange parsé.
+- `CubeState.solved()` : nouvel état résolu indépendant à chaque appel.
+- `apply_move(state, move) -> CubeState` : retourne un nouvel état, à implémenter.
+- `apply_moves(state, moves) -> CubeState` : même convention, à implémenter.
+- `is_solved(state) -> bool` : comparer au repère résolu, à implémenter.
+
+L'animation garde un état de départ, une progression visuelle et un état cible.
+Le nouvel état logique n'est validé qu'à la fin du mouvement ; pas de petites
+rotations flottantes accumulées dans les données du cube.
+
+## CFOP
+
+Ordre : Cross → F2L → OLL → PLL. Dans notre repère, la croix blanche est sur U
+et la dernière couche jaune sur D. Les formules pédagogiques CFOP qui placent
+la croix blanche sur D doivent être remappées explicitement, sans changer les
+couleurs du contrat et sans émettre x/y/z. Tester ce remapping avant de remplir
+les cas CFOP ; ne pas mélanger les deux conventions.
+
+Les algorithmes sont dans `data/cfop/` avec cas, repère, préconditions et
+provenance. Pas de bibliothèque qui résout le cube à notre place.
+Vérifier les postconditions de chaque étape ; garder les étapes et statistiques
+en interne ou sur stderr, jamais dans la ligne de solution.
+
+## Vérification et Git
+
+Le renderer aide à voir les erreurs, mais ne remplace pas les tests.
+Tester les mouvements avec des états attendus écrits indépendamment, et les
+solutions par simulation. Réutiliser un seul modèle peut masquer une erreur
+commune aux deux composants.
+
+Branches `solver/<sujet>`, `renderer/<sujet>`, `shared/<sujet>`.
+PR relue par l'autre ; commits courts en anglais.
+Ne pas ajouter automatiquement de trailer de coauteur IA aux commits.

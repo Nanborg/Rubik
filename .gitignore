@@ -1,11 +1,8 @@
-build/
 __pycache__/
 *.py[cod]
-rubik_engine
-*.o
+.venv/
+build/
 *~
 *.swp
 *.swo
-data/tables/*
-!data/tables/.gitkeep
 *:Zone.Identifier

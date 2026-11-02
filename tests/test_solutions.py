@@ -1,1 +1,1 @@
-# TODO(python): end-to-end solution tests.
+# TODO(Neon): vérifier que mélange + solution résout le cube et les étapes CFOP.

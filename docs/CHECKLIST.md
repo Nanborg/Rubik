@@ -1,115 +1,64 @@
-# Rubik — Instructions pas à pas
+# Rubik — Travail à deux, full Python
 
-Suivez les étapes **dans l'ordre**. Cochez quand c'est fini.
-Règles partagées : [CONVENTIONS.md](CONVENTIONS.md). Sujet : [SUJET.md](SUJET.md).
+Références : [contrat](CONVENTIONS.md), [sujet conservé](SUJET.md),
+[points à vérifier conservés](POINTS_A_VERIFIER.md).
 
-**Plan :** Python = interface + tests. C++ = tout le calcul. Lien = l'exécutable `./rubik_engine`.
-Le simulateur Python sert pendant le projet, pas dans `./rubik`.
+## 1. Modèle commun — ensemble
 
----
+- [ ] Définir les six couleurs avec une Enum.
+- [ ] Fixer les positions des 12 arêtes et 8 coins et l'ordre des stickers.
+- [ ] Fournir un état résolu et le parser de mouvements.
+- [ ] Implémenter les 18 mouvements sans dépendance graphique.
+- [ ] Vérifier les mouvements avec des états attendus indépendants.
+- [ ] Tester quatre quarts de tour, deux demi-tours et mouvement + inverse.
+- [ ] Implémenter import/export JSON et validation des états impossibles.
+- [ ] Fixer le repère des algorithmes CFOP par rapport aux couleurs.
+- [ ] Vérifier que chaque propriétaire peut avancer avec les mêmes fixtures.
 
-## Étape 0 — Démarrer (ensemble)
+## 2. Solver — neon_05
 
-- [ ] Cloner le dépôt, lancer `make`.
-- [ ] Lire [CONVENTIONS.md](CONVENTIONS.md) ensemble.
-- [ ] Ajouter le PDF du sujet dans `docs/`.
+- [ ] Initialiser l'état à partir du mélange.
+- [ ] Cross : placer et orienter les quatre arêtes de croix.
+- [ ] F2L : résoudre les quatre paires coin/arête.
+- [ ] OLL : orienter la dernière couche.
+- [ ] PLL : permuter la dernière couche et terminer l'alignement.
+- [ ] Vérifier les postconditions sans casser les étapes précédentes.
+- [ ] Adapter les algorithmes à U/R/F/D/L/B sans M/E/S/x/y/z.
+- [ ] Documenter les cas et algorithmes dans data/cfop/.
+- [ ] Simplifier les mouvements adjacents sans changer leur effet.
+- [ ] Renvoyer une liste de mouvements puis une seule ligne sur stdout.
+- [ ] Gérer cube résolu, erreurs et cas non encore couverts.
+- [ ] Mesurer CFOP en Python : moyenne ≤ 50 HTM, temps total ≤ 3 s.
+- [ ] Optimiser les choix F2L et enchaînements si les mesures dépassent la cible.
 
----
+## 3. Renderer — nicolsan
 
-## Étape 1 — Le cube et les mouvements
+- [ ] Choisir et documenter la bibliothèque graphique.
+- [ ] Lire l'état initial et les mouvements fournis sur stdin.
+- [ ] Proposer un mode logs pour tester avant la 3D.
+- [ ] Dessiner les cubies, centres et stickers au bon endroit.
+- [ ] Ajouter caméra orbitale, zoom et éclairage lisible.
+- [ ] Animer chaque couche, puis figer précisément sa nouvelle position.
+- [ ] Afficher le mouvement courant et la progression.
+- [ ] Ajouter pause, reprise, pas suivant/précédent et retour au début.
+- [ ] Respecter vitesse et délai configurables.
+- [ ] Vérifier l'état final ; signaler une séquence valide qui ne résout pas.
+- [ ] Refuser une entrée invalide sans animer une séquence partielle.
+- [ ] Garder un état logique indépendant des flottants de l'animation.
 
-Chacun code **sa propre version** du cube. Pas de code partagé.
+## 4. Intégration — ensemble
 
-**Python** (`python/`)
-- [ ] `parser.py` : lire `F R U2 B' L' D'`, refuser le reste (`M E S x y z`, etc.).
-- [ ] `verifier.py` : simuler un cube, appliquer des mouvements.
-- [ ] Tests dans `tests/test_parser.py` et `tests/test_rotations.py`.
+- [ ] Même mélange → même état initial dans les deux parties.
+- [ ] Solver → fichier de mouvements → renderer.
+- [ ] Fixtures d'états intermédiaires et finaux pour détecter les désaccords.
+- [ ] Vérifier une solution par simulation et par états de référence.
+- [ ] Tester les erreurs, le superflip et des mélanges reproductibles variés.
+- [ ] Bench chronométré dans un nouveau processus, démarrage Python compris.
+- [ ] Le solver fonctionne sans bibliothèque graphique et sans fenêtre.
+- [ ] Tests depuis un clone propre sur la machine de l'école.
+- [ ] Mettre à jour les instructions au fur et à mesure des fonctions réalisées.
+- [ ] Chacun sait expliquer le modèle, les rotations et CFOP.
 
-**C++** (`cpp/`)
-- [ ] `cube.hpp/.cpp` : 8 coins, 12 arêtes (position + orientation).
-- [ ] `moves.hpp/.cpp` : les 18 mouvements.
-- [ ] Test dans `cpp/tests/test_moves.cpp`.
-
-**Ensemble**
-- [ ] Python crée `data/vectors/moves.txt` avec `python/gen_vectors.py`.
-- [ ] Le test C++ relit ce fichier : états identiques.
-
-✅ Fini quand : Python et C++ donnent **le même cube** pour chaque mélange.
-
----
-
-## Étape 2 — Coordonnées et tables
-
-**C++ seul** (Python avance sur l'étape 4)
-- [ ] `coordinates.cpp` : coordonnées de la phase 1 et de la phase 2.
-- [ ] `tables.cpp` : tables de transition.
-- [ ] `tables.cpp` : tables de pruning.
-- [ ] `make` crée les tables dans `data/tables/` (nouvelle règle du `Makefile`).
-- [ ] `./rubik` les charge seulement, sans les recalculer.
-- [ ] Tests : chaque coordonnée revient bien à l'état d'origine.
-
-✅ Fini quand : les tables se génèrent et se chargent sans erreur.
-
----
-
-## Étape 3 — Le solveur
-
-**C++**
-- [ ] `phase1.cpp` : recherche IDA* jusqu'au groupe H.
-- [ ] `phase2.cpp` : recherche IDA* pour finir.
-- [ ] `solver.cpp` : enchaîner les deux phases, renvoyer la solution.
-- [ ] Test `cpp/tests/test_solver.cpp` : la solution résout le cube.
-
-**Python**
-- [ ] Aider à tester : mélanges variés, cas difficiles.
-- [ ] *(optionnel, hors rendu)* `python/solver.py` : ton solveur Two-Phase, même algorithme. Lent, pour apprendre et comparer avec le C++.
-
-✅ Fini quand : tous les mélanges de test sont résolus, **sans Python**.
-
----
-
-## Étape 4 — Brancher Python et C++
-
-**C++**
-- [ ] `main.cpp` : lire le mélange en argument, afficher la solution (contrat dans [CONVENTIONS.md](CONVENTIONS.md)).
-- [ ] `main.cpp` : option `--build-tables` (appelée par `make`).
-- [ ] Codes de retour : 0 ok, 1 mélange invalide, 2 erreur interne. Message `Error: ...` sur stderr.
-
-**Python**
-- [ ] `main.py` et `rubik` : lire l'argument, lancer `./rubik_engine` avec `subprocess`.
-- [ ] Si `./rubik_engine` est absent : message « lancez make ».
-- [ ] Tests : `mélange + solution` = cube résolu, vérifié par `verifier.py`.
-- [ ] Afficher **uniquement** la solution sur stdout.
-- [ ] Gérer les erreurs : relayer le message sur stderr, code 1.
-
-✅ Fini quand : `./rubik "F R U2 B' L' D'"` affiche une solution valide.
-
----
-
-## Étape 5 — Mesurer et améliorer
-
-**Python**
-- [ ] `benchmark.py` : mélanges reproductibles, longueurs variées.
-- [ ] Mesurer le nombre de mouvements (moyenne).
-- [ ] Mesurer le temps **total** d'un `./rubik` (démarrage + chargement des tables + recherche).
-- [ ] Lancer plusieurs `./rubik` à la suite : chaque temps doit rester < 3 s.
-- [ ] Tester le superflip (voir [POINTS_A_VERIFIER.md](POINTS_A_VERIFIER.md)).
-- [ ] `tests/test_performance.py`.
-
-**C++**
-- [ ] Réduire le temps et la mémoire si besoin.
-- [ ] Chercher des solutions plus courtes si le temps le permet.
-
-✅ Fini quand : moyenne ≤ 50 mouvements et ≤ 3 secondes.
-
----
-
-## Étape 6 — Livraison
-
-**Ensemble**
-- [ ] Tester depuis un dossier **vide** : `git clone`, `make`, `./rubik`.
-- [ ] Tester sur la machine de la soutenance.
-- [ ] Mettre à jour le `README.md` (retirer « seule la structure existe »).
-- [ ] Documenter l'algorithme (simple, avec schémas).
-- [ ] Vérifier avec [POINTS_A_VERIFIER.md](POINTS_A_VERIFIER.md).
-- [ ] Chacun s'entraîne à **expliquer tout l'algorithme**.
+Seule l’arborescence est préparée : tous les fichiers Python sont des TODO,
+y compris les tests. Aucune fonctionnalité n’est encore implémentée. Les références SUJET.md et POINTS_A_VERIFIER.md
+restent inchangées ; leurs anciennes mentions C++ se lisent avec cette checklist.
