@@ -1,1 +1,1 @@
-# TODO(Nico): lire l’état initial, les options et les mouvements sur stdin.
+# TODO(nicolsan): lire l’état initial, les mouvements sur stdin et les options du rendu bonus.

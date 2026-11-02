@@ -2,112 +2,109 @@
 
 # Rubik
 
-Projet 42 de Rubik's Cube 3×3×3, entièrement en Python.
-Résolution avec CFOP ; visualisation 3D animée pour voir et vérifier la solution.
+Résolveur de Rubik’s Cube 3×3×3 entièrement en Python, avec l’algorithme CFOP.
+
+## Priorité : la partie obligatoire
+
+```sh
+./rubik "F R U2 B' L' D'"
+```
+
+Le programme reçoit le mélange et affiche uniquement les mouvements de solution.
+Objectifs du sujet : **moyenne ≤ 50 mouvements HTM et temps maximal ≤ 3 secondes
+par résolution**, démarrage Python et affichage de la solution compris.
+Le choix de CFOP ne garantit pas ces performances : elles doivent être mesurées.
+
+Le renderer 3D est un **bonus secondaire**, lancé séparément. La résolution
+ne charge aucune bibliothèque graphique et n’attend aucune animation.
+Les bonus ne sont évalués que si la partie obligatoire est parfaite.
 
 ## Répartition
 
-| Partie | Responsable | Objectif |
+| Partie | Responsable | Rôle |
 | --- | --- | --- |
-| Solver | neon_05 | Trouver la solution : Cross → F2L → OLL → PLL |
-| Renderer | nicolsan | Représenter le cube en 3D et animer les mouvements reçus |
-| Modèle commun et contrat | Ensemble | Même état initial, mêmes couleurs, mêmes mouvements |
+| Solver obligatoire | neon_05 | Cross → F2L → OLL → PLL |
+| Renderer bonus | nicolsan | Visualisation 3D et lecture des mouvements |
+| Modèle commun et validation | Ensemble | Couleurs, état du cube, rotations, tests et performances |
+
+nicolsan peut préparer la 3D avec des séquences de test sans bloquer le solver.
+La vérification des solutions et les benchmarks fonctionnent sans renderer.
 
 ## État actuel
 
-Seule la structure est préparée pour cette nouvelle direction.
-**Tous les fichiers Python contiennent uniquement des commentaires TODO.**
-Aucun modèle, parser, solver, renderer ou test n’est implémenté.
-Les interfaces décrites ci-dessous sont les objectifs à développer ensemble.
+**Structure uniquement : les fichiers Python contiennent des commentaires TODO.**
+Aucun code Python ni test n’est implémenté. Les commandes décrites sont les
+interfaces à construire ensemble ; elles ne résolvent ni n’affichent encore de cube.
 
-## Dossiers
+## Organisation
 
 ```text
-rubik                 entrée compatible avec le sujet → solver
-solver.py             CLI du solver
-render.py             CLI du renderer
+rubik                       unique entrée du solver : arguments et sortie
 common/
-  colors.py           Enum Color
-  state.py            12 arêtes + 8 coins ; positions fixes
-  moves.py            parsing commun de la notation
-  cube.py             rotations du modèle logique à implémenter
-solving/              neon_05
-  cli.py              mélange → solution sur stdout
-  cfop.py             orchestration des quatre étapes
+  colors.py                 Enum des six couleurs
+  state.py                  12 arêtes + 8 coins ordonnés
+  moves.py                  notation et parsing
+  cube.py                   rotations et état résolu
+solving/                    neon_05 — CFOP
+  cfop.py                   orchestration
   cross.py
   f2l.py
   oll.py
   pll.py
-rendering/            nicolsan
-  cli.py              état initial + instructions sur stdin
-  scene.py            cube, stickers, lumière et caméra
-  animation.py        lecture des mouvements et transitions
-  verifier.py         contrôle des états et de la solution
-tools/benchmark.py    temps total et nombre de mouvements
-tests/                modèle, solver, renderer et intégration
-data/cfop/            algorithmes CFOP documentés à ajouter
-docs/                 sujet, contrat et étapes du projet
+tools/benchmark.py          temps total et nombre de mouvements
+tests/core/                 modèle, parsing, rotations, solutions, performances
+data/cfop/                  algorithmes documentés à ajouter
+render.py                   entrée du renderer bonus : arguments et stdin
+rendering/                  nicolsan — bonus indépendant
+  scene.py                  cube 3D, stickers et caméra
+  animation.py              mouvements et contrôles de lecture
+  verifier.py               vérifications propres à la lecture visuelle
+tests/renderer/             tests du bonus
+docs/                       références, contrat et tâches
 ```
 
-Les anciens fichiers C++ et le solveur Python d'apprentissage étaient des
-squelettes ; ils sont remplacés par cette structure Python.
+## Commandes de travail
 
-## Démarrer
+Python 3.10 ou plus récent et make pour le noyau. La bibliothèque graphique
+reste à choisir et ne sera nécessaire qu’au bonus.
 
-Python 3.10 ou plus récent et make. Le noyau utilise la bibliothèque standard.
-La bibliothèque graphique sera choisie et documentée avant de développer la 3D ;
-elle ne doit pas être nécessaire pour lancer le solver.
+| Commande | Rôle |
+| --- | --- |
+| `make` | Vérifier la syntaxe du noyau obligatoire |
+| `make test` | Lancer uniquement les tests du noyau |
+| `make bench` | Mesurer le solver en processus séparés, une fois implémenté |
+| `make check-renderer` | Vérifier la syntaxe du bonus |
+| `make test-renderer` | Lancer les tests du renderer séparément |
+| `make clean`, `make fclean`, `make re` | Nettoyer les caches Python / revérifier le noyau |
 
-```sh
-make
-make test
-```
+Actuellement les tests sont des TODO : un résultat « zéro test » ne valide rien.
+Le benchmark est également à écrire.
 
-`make` vérifie la syntaxe Python ; il ne compile aucun moteur C++.
-`make test` ne lance actuellement aucun test réel : les fichiers de tests sont
-des emplacements à compléter. Un succès avec zéro test ne valide rien.
+## Visualisation facultative, après résolution
 
-## Interfaces prévues
-
-Ces commandes sont à implémenter ; elles ne fonctionnent pas encore.
-
-```sh
-./rubik "F R U2 B' L' D'"
-./solver.py "F R U2 B' L' D'"
-./render.py "F R U2 B' L' D'" --output 3d --speed 2 --delay 0.5 < solution.txt
-```
-
-Le solver reçoit le mélange en un argument et écrit uniquement la solution.
-Le renderer reçoit le même mélange pour reconstruire l'état initial et lit
-la solution sur stdin. L'import d'un état cubie JSON est aussi prévu avec
-`--state initial.json`. Ces deux modes d'entrée sont exclusifs.
-
-Une fois les composants implémentés, exécution en deux temps :
+Interface prévue, à implémenter :
 
 ```sh
 MIX="F R U2 B' L' D'"
-./solver.py "$MIX" > solution.txt &&
+./rubik "$MIX" > solution.txt &&
 ./render.py "$MIX" --output 3d --speed 2 --delay 0.5 < solution.txt
 ```
 
-La première étape doit réussir avant de lancer la seconde. Pas de JSON, logs,
-labels CFOP ou données graphiques dans la sortie standard du solver.
-
-## Objectifs à mesurer
-
-Le sujet impose une moyenne d'au plus 50 mouvements HTM et au plus 3 secondes
-par résolution. **Le choix de CFOP ne garantit pas ces performances** : il faudra
-mesurer puis optimiser les étapes et les enchaînements. Le renderer est lancé
-séparément pour que son animation ne ralentisse pas la commande de résolution.
+Le renderer reconstruit l’état initial à partir du mélange et rejoue la solution
+lue sur stdin. Son démarrage et la durée des animations sont séparés du temps
+mesuré pour `./rubik`. L’import d’un état JSON est une extension facultative.
 
 ## Documents
 
-- [Sujet résumé](docs/SUJET.md) et [PDF](Rubik.subject.pdf).
+- [Auteurs](docs/author).
+- [Sujet résumé](docs/SUJET.md) et [PDF](docs/Rubik.subject.pdf).
 - [Points à vérifier](docs/POINTS_A_VERIFIER.md).
-- [Contrat solver / renderer](docs/CONVENTIONS.md).
-- [Checklist de travail](docs/CHECKLIST.md).
-- [Objectifs du rendu 3D](docs/RENDERER.md).
+- [Conventions du modèle et interfaces](docs/CONVENTIONS.md).
+- [Checklist : obligatoire puis bonus](docs/CHECKLIST.md).
+- [Renderer bonus](docs/RENDERER.md).
 
-Les fichiers `docs/SUJET.md` et `docs/POINTS_A_VERIFIER.md` sont conservés
-tels quels comme références. Certaines mentions de l'ancienne architecture dans
-ces références ne décrivent plus l'organisation du code.
+`docs/SUJET.md` et `docs/POINTS_A_VERIFIER.md` sont conservés sans modification.
+Le PDF et le fichier `author` sont rangés dans `docs/`.
+`.gitignore` et `.editorconfig` restent à la racine pour appliquer leurs règles
+à tout le dépôt.
+Leurs mentions historiques C++ ne décrivent pas l’organisation actuelle.

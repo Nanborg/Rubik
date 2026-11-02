@@ -1,4 +1,4 @@
-# Rubik — Contrat solver / renderer Python
+# Rubik — Modèle commun, solver obligatoire et renderer bonus
 
 Contrat proposé pour votre travail à deux ; les détails sont à valider ensemble.
 Aucune des API décrites n’est encore implémentée. Les exemples sont documentaires.
@@ -9,9 +9,18 @@ neon_05 développe `solving/`. nicolsan développe `rendering/`.
 `common/`, les interfaces, les tests d'intégration et les documents se décident
 ensemble. Le solver fonctionne sans importer le renderer ou une bibliothèque 3D.
 
+## Priorité et indépendance
+
+La partie obligatoire est `rubik` : moyenne ≤ 50 HTM, maximum ≤ 3 secondes
+par résolution, démarrage Python et sortie texte compris. Le renderer est un
+bonus facultatif, lancé après la résolution et jamais importé par le solver.
+Les tests du noyau et le benchmark ne nécessitent pas de bibliothèque graphique.
+Les bonus ne sont évalués que si la partie obligatoire est parfaite.
+
 ## Entrées et sorties
 
-- `./solver.py "<mélange>"` et `./rubik "<mélange>"` ont le même comportement.
+- `./rubik "<mélange>"` est l’unique entrée du solver.
+- Le parsing CLI et les erreurs sont à écrire dans `rubik`, le calcul dans `solving/`.
 - Entrée : un argument contenant le mélange, appliqué à un cube résolu.
 - Sortie standard : mouvements de solution séparés par un espace, puis newline.
 - Cube déjà résolu : ligne vide, une fois le solver implémenté.
@@ -19,7 +28,7 @@ ensemble. Le solver fonctionne sans importer le renderer ou une bibliothèque 3D
 - Codes : 0 succès, 1 entrée invalide, 2 erreur interne ou fonction non implémentée.
 - Ne pas renvoyer simplement l'inverse du mélange.
 
-Renderer :
+Renderer bonus, entrée et options gérées dans `render.py` :
 ```sh
 ./render.py "<mélange initial>" --output 3d --speed 1 --delay 0 < solution.txt
 ./render.py --state initial.json --output logs < solution.txt
@@ -86,9 +95,9 @@ state = CubeState.solved()
 Le modèle, l'état résolu, la validation physique et les rotations
 sont tous à implémenter dans le modèle commun.
 
-## Format JSON des états
+## Extension facultative : format JSON des états
 
-À implémenter pour `--state` et les fixtures d'intégration :
+Après le noyau obligatoire, à envisager pour `--state` et les fixtures du bonus :
 objet avec `version: 1`, `edges` et `corners`.
 Les couleurs sont les valeurs textuelles de l'Enum, par exemple `"WHITE"`.
 Les listes et tuples respectent exactement les ordres ci-dessus.
@@ -126,7 +135,8 @@ en interne ou sur stderr, jamais dans la ligne de solution.
 
 ## Vérification et Git
 
-Le renderer aide à voir les erreurs, mais ne remplace pas les tests.
+Les tests obligatoires sont dans `tests/core/` ; ceux du bonus dans `tests/renderer/`.
+Le renderer aide à voir les erreurs, mais ne remplace pas les tests du noyau.
 Tester les mouvements avec des états attendus écrits indépendamment, et les
 solutions par simulation. Réutiliser un seul modèle peut masquer une erreur
 commune aux deux composants.

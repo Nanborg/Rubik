@@ -1,4 +1,14 @@
-# Renderer — nicolsan
+# Renderer bonus — nicolsan
+
+## Priorité
+
+Le renderer est facultatif. Il n’est jamais lancé ni importé par `./rubik`.
+Les 3 secondes concernent la commande de résolution autonome, pas l’animation
+lancée ensuite. La moyenne de 50 HTM et le temps maximal de 3 secondes restent
+prioritaires ; les bonus ne sont évalués que si l’obligatoire est parfait.
+
+Les arguments sont gérés dans `render.py`. Les tests du bonus vivent dans
+`tests/renderer/` et se lancent avec `make test-renderer`.
 
 ## Objectif
 
@@ -9,7 +19,7 @@ résolution. La visualisation est un bonus du sujet et un outil pour travailler
 
 ## Parcours prévu
 
-1. Charger le mélange initial ou un état cubie JSON valide.
+1. Reconstruire l’état initial à partir du mélange ; import JSON facultatif ensuite.
 2. Lire les mouvements sur stdin et les valider avant de commencer.
 3. Montrer l'état initial avec les couleurs du contrat.
 4. Lire automatiquement ou avancer mouvement par mouvement.
