@@ -72,6 +72,10 @@ FACE_NEIGHBORS = {
 	"B": "ULDR",
 }
 
+# Recoit une piece, sa position de depart et sa position d'arrivee
+# Calcule ou regardent ses couleurs apres un quart de tour
+# Renvoie les couleurs dans l'ordre de la position d'arrivee
+# Ne modifie pas la piece de depart
 def rotate_piece(piece, source, destination, face):
 	neighbors = FACE_NEIGHBORS[face]
 	face_map = dict(zip(neighbors, neighbors[1:] + neighbors[:1]))
@@ -87,6 +91,10 @@ def rotate_piece(piece, source, destination, face):
 		for direction in POSITION_FACE[destination]
 	)
 
+# Recoit le cube et un mouvment valide
+# Deplace les pieces et reoriente leurs couleurs
+# Renvoie un nouveau cube
+# Ne modifi pas le cube de depart
 def apply_move(state, move):
 	face = move[0]
 	turns = quarter_turns(move)

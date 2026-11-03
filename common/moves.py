@@ -27,9 +27,15 @@ SOLVED = [
 	(Colors.YELLOW,	Colors.BLUE,	Colors.ORANGE	)	# D, B, L
 	]
 
+# Recoit un mouvement valide
+# Renvoie le nombre de quarts de tour : 1, 2 ou 3
 def quarter_turns(move: str) -> int:
     return {"": 1, "2": 2, "'": 3}[move[1:]]
 
+# Recoit le texte des mouvements
+# Separe les mouvements et verifie leurs notation
+# Renvoie les mouvements dans leur ordre de lecture
+# Leve ValueError si un mouvement est invalide
 def parse_moves(text: str) -> tuple[str, ...]:
     moves = tuple(text.split())
     allowed = {

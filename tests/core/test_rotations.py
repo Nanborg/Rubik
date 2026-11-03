@@ -14,6 +14,9 @@ MOVES = (
     "B", "B'", "B2",
 )
 
+# Recoit un mouvement valide
+# Renvoie son inverse
+# Garde le meme mouvement pour un demi-tour
 def inverse_move(move):
     if move.endswith("2"):
         return move
@@ -22,6 +25,9 @@ def inverse_move(move):
 
     return move + "'"
 
+# Recoit un etat et une suite de mouvements
+# Applique les mouvements avec la fonction choisi
+# Renvoie le resultat sans modifier l'etat de depart
 def play_sequence(state, moves, move_function=apply_move):
     result = state.copy()
 
@@ -30,6 +36,7 @@ def play_sequence(state, moves, move_function=apply_move):
     return result
 
 class TestRotations(unittest.TestCase):
+    # Verifie les pieces attendues apres un mouvement U
     def test_u(self):
         expected = [
             SOLVED[3], SOLVED[1], SOLVED[2], SOLVED[6],
@@ -41,6 +48,8 @@ class TestRotations(unittest.TestCase):
 
         self.assertEqual(apply_move(SOLVED, "U"), expected)
 
+    # Verifie le retour au depart apres quatre quarts de tour
+    # Verifie le retour au depart apres deux demi-tours
     def test_repeated_moves(self):
         for move in MOVES:
             with self.subTest(move=move):
@@ -48,6 +57,7 @@ class TestRotations(unittest.TestCase):
                 result = play_sequence(SOLVED, (move,) * count)
                 self.assertEqual(result, SOLVED)
 
+    # Verifie le retour au depart apres un mouvement et son inverse
     def test_move_and_inverse(self):
         for move in MOVES:
             with self.subTest(move=move):
@@ -56,6 +66,8 @@ class TestRotations(unittest.TestCase):
 
                 self.assertEqual(result, SOLVED)
 
+    # Compare les 18 mouvements au calcul geometrique
+    # Verifie la position des pieces et l'orientation de leurs couleurs
     def test_moves_against_reference(self):
         for move in MOVES:
             with self.subTest(move=move):

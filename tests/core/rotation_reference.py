@@ -9,6 +9,9 @@ DIRECTIONS = {
     "B": (0, 0, -1),
 }
 
+# Recoit des coordonnees et l'axe de rotation
+# Tourne d'un quart de tour horaire vu depuis l'exterieur
+# Renvoie les nouvelle coordonnees
 def rotate_vector(vector, axis):
     x, y, z = vector
     a, b, c = axis
@@ -26,6 +29,9 @@ PIECE_FACES = (
     "URF UFL UBR ULB DFR DLF DRB DBL"
 ).split()
 
+# Recoit un cube sous forme d'aretes et de coins
+# Associe chaque couleur a une position et une direction
+# Renvoie les 48 stickers sans les centres fixes
 def to_stickers(state):
     stickers = {}
 
@@ -40,6 +46,9 @@ def to_stickers(state):
             stickers[position, direction] = color
     return stickers
 
+# Recoit les stickers et la face a tourner
+# Tourne les positions et directions des stickers de cette face
+# Renvoie de nouveaux stickers sans modifier ceux de depart
 def rotate_layer(stickers, face):
     axis = DIRECTIONS[face]
     result = {}
@@ -56,6 +65,9 @@ def rotate_layer(stickers, face):
     return result
 
 
+# Recoit les stickers et un mouvement valide
+# Applique le nombre de quarts de tour demande
+# Renvoie les stickers apres le mouvemnt
 def reference_move(stickers, move):
     result = stickers.copy()
 
