@@ -62,6 +62,14 @@ POSITION_FACE = (
 	"DFR", "DLF", "DRB", "DBL",
 )
 
+FACE_NEIGHBORS = {
+	"U": "FLBR",
+	"D": "FRBL",
+	"L": "UFDB",
+	"R": "UBDF",
+	"F": "URDL",
+	"B": "ULDR",
+}
 
 def cycle(cube: list[tuple], commutator: list, n: int) -> list[tuple]:
     for i in range(len(commutator) - n):
@@ -70,6 +78,21 @@ def cycle(cube: list[tuple], commutator: list, n: int) -> list[tuple]:
             cube[commutator[i]],
         )
     return cube
+
+def rotate_piece(piece, source, destination, face):
+	neighbors = FACE_NEIGHBORS[face]
+	face_map = dict(zip(neighbors, neighbors[1:] + neighbors[:1]))
+	face_map[face] = face
+	color_by_face = {}
+
+	for direction, color in zip(POSITION_FACE[source], piece):
+		new_direction = face_map[direction]
+		color_by_face[new_direction] = color
+
+	return tuple(
+		color_by_face[direction]
+		for direction in POSITION_FACE[destination]
+	)
 
 def apply_move(state, move):
 	face = move[0]
@@ -80,6 +103,16 @@ def apply_move(state, move):
 	result = list(state)
 
 	for _ in range(turns):
+		previous = list(result)
+
 		for positions in FACE_CYCLES[face]:
-			cycle(result, positions, 1)
+			for index, destination in enumerate(positions):
+				source = positions[(index + 1) % len(positions)]
+
+				result[destination] = rotate_piece(
+					previous[source],
+					source,
+					destination,
+					face,
+				)
 	return result
