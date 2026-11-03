@@ -1,6 +1,5 @@
 # TODO(shared): appliquer les mouvements et vérifier si le cube est résolu.
 from enum import IntEnum
-from common.moves import SOLVED
 
 class Positions(IntEnum):
 	# edges

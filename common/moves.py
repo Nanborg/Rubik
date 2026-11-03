@@ -1,5 +1,6 @@
 # TODO(shared): parser et valider les 18 mouvements autorisés.
-from common.colors import Colors
+from common.colors import Colors, COLOR_TEXT
+from common.cube import Positions as pos
 
 SOLVED = [
 	# edges												# affected by:
@@ -38,3 +39,64 @@ def parse_moves(text: str) -> tuple[str, ...]:
         if move not in allowed:
             raise ValueError(f"mouv invalide : {move}")
     return moves
+
+def cycle(cube: list[tuple], commutator:list[pos], n:int) -> list[tuple]:
+	"""
+	applies specified commutator to cube<br>
+	**/!\\ WARNING: does not rotate pieces, you have to take care of that yourself**
+	"""
+	for i in range(len(commutator) - n):
+		cube[commutator[i]], cube[commutator[i + n]] = cube[commutator[i + n]], cube[commutator[i]]
+	return cube
+
+def print_sticker(col: Colors) -> None:
+	print(COLOR_TEXT[col] + "■ ", end="")
+
+def print_pieces(cube: list[tuple], pieces: list[tuple]) -> None:
+	for p, i in pieces:
+		if (p < 0):
+			print_sticker(i)
+		else:
+			print_sticker(cube[p][i])
+	print("\033[0m")
+
+def print_cube(cube: list[tuple]) -> None:
+	"""
+	prints colored cube faces on stdout
+	"""
+	print("UP")
+	print_pieces(cube, [(pos.UBL, 0), (pos.UB, 0), (pos.UBR, 0)])
+	print_pieces(cube, [(pos.UL, 0), (-1, Colors.WHITE), (pos.UR, 0)])
+	print_pieces(cube, [(pos.UFL, 0), (pos.UF, 0), (pos.UFR, 0)])
+
+	print("DOWN")
+	print_pieces(cube, [(pos.DFL, 0), (pos.DF, 0), (pos.DFR, 0)])
+	print_pieces(cube, [(pos.DL, 0), (-1, Colors.YELLOW), (pos.DR, 0)])
+	print_pieces(cube, [(pos.DBL, 0), (pos.DB, 0), (pos.DBR, 0)])
+
+	print("FRONT")
+	print_pieces(cube, [(pos.UFL, 1), (pos.UF, 1), (pos.UFR, 2)])
+	print_pieces(cube, [(pos.FL, 0), (-1, Colors.GREEN), (pos.FR, 1)])
+	print_pieces(cube, [(pos.DFL, 2), (pos.DF, 1), (pos.DFR, 1)])
+
+	print("BACK")
+	print_pieces(cube, [(pos.UBL, 2), (pos.UB, 1), (pos.UBR, 1)])
+	print_pieces(cube, [(pos.BL, 1), (-1, Colors.BLUE), (pos.BR, 0)])
+	print_pieces(cube, [(pos.DBL, 1), (pos.DB, 1), (pos.DBR, 2)])
+
+	print("RIGHT")
+	print_pieces(cube, [(pos.URF, 1), (pos.UR, 1), (pos.URB, 2)])
+	print_pieces(cube, [(pos.RF, 0), (-1, Colors.RED), (pos.RB, 1)])
+	print_pieces(cube, [(pos.DRF, 2), (pos.DR, 1), (pos.DRB, 1)])
+
+	print("LEFT")
+	print_pieces(cube, [(pos.ULB, 1), (pos.UL, 1), (pos.ULF, 2)])
+	print_pieces(cube, [(pos.LB, 0), (-1, Colors.ORANGE), (pos.LF, 1)])
+	print_pieces(cube, [(pos.DLB, 2), (pos.DL, 1), (pos.DLF, 1)])
+
+
+if __name__ == "__main__":
+	print("hello")
+	#print(SOLVED)
+	print_cube(SOLVED)
+	print_cube(cycle(SOLVED, [pos.FU, pos.FR, pos.FD, pos.FL], 1))
