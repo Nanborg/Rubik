@@ -1,7 +1,7 @@
 # TODO(shared): appliquer les mouvements et vérifier si le cube est résolu.
-from enum import Enum
+from enum import IntEnum
 
-class Positions(Enum):
+class Positions(IntEnum):
 	# edges
 	FU = UF = 0
 	FR = RF = 1
