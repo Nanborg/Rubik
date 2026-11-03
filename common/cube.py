@@ -1,5 +1,6 @@
 # TODO(shared): appliquer les mouvements et vérifier si le cube est résolu.
 from enum import IntEnum
+from common.moves import quarter_turns
 
 class Positions(IntEnum):
 	# edges
@@ -71,14 +72,6 @@ FACE_NEIGHBORS = {
 	"B": "ULDR",
 }
 
-def cycle(cube: list[tuple], commutator: list, n: int) -> list[tuple]:
-    for i in range(len(commutator) - n):
-        cube[commutator[i]], cube[commutator[i + n]] = (
-            cube[commutator[i + n]],
-            cube[commutator[i]],
-        )
-    return cube
-
 def rotate_piece(piece, source, destination, face):
 	neighbors = FACE_NEIGHBORS[face]
 	face_map = dict(zip(neighbors, neighbors[1:] + neighbors[:1]))
@@ -96,7 +89,7 @@ def rotate_piece(piece, source, destination, face):
 
 def apply_move(state, move):
 	face = move[0]
-	turns = {"": 1, "2": 2, "'":3}[move[1:]]
+	turns = quarter_turns(move)
 
 	if face not in FACE_CYCLES:
 		raise NotImplementedError(f"Rotation pas implémentée : {face}")

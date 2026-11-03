@@ -26,3 +26,7 @@ class TestParser(unittest.TestCase):
             with self.subTest(move=move):
                 with self.assertRaises(ValueError):
                     parse_moves(move)
+
+    def test_invalid_move_in_sequence(self):
+        with self.assertRaises(ValueError):
+            parse_moves("U X R2")

@@ -1,6 +1,5 @@
 # TODO(shared): parser et valider les 18 mouvements autorisés.
 from common.colors import Colors, COLOR_TEXT
-from common.cube import Positions as pos
 
 SOLVED = [
 	# edges												# affected by:
@@ -28,6 +27,9 @@ SOLVED = [
 	(Colors.YELLOW,	Colors.BLUE,	Colors.ORANGE	)	# D, B, L
 	]
 
+def quarter_turns(move: str) -> int:
+    return {"": 1, "2": 2, "'": 3}[move[1:]]
+
 def parse_moves(text: str) -> tuple[str, ...]:
     moves = tuple(text.split())
     allowed = {
@@ -40,7 +42,7 @@ def parse_moves(text: str) -> tuple[str, ...]:
             raise ValueError(f"mouv invalide : {move}")
     return moves
 
-def cycle(cube: list[tuple], commutator:list[pos], n:int) -> list[tuple]:
+def cycle(cube: list[tuple], commutator:list[int], n:int) -> list[tuple]:
 	"""
 	applies specified commutator to cube<br>
 	**/!\\ WARNING: does not rotate pieces, you have to take care of that yourself**
@@ -64,6 +66,8 @@ def print_cube(cube: list[tuple]) -> None:
 	"""
 	prints colored cube faces on stdout
 	"""
+	from common.cube import Positions as pos
+
 	print("UP")
 	print_pieces(cube, [(pos.UBL, 0), (pos.UB, 0), (pos.UBR, 0)])
 	print_pieces(cube, [(pos.UL, 0), (-1, Colors.WHITE), (pos.UR, 0)])
@@ -96,6 +100,8 @@ def print_cube(cube: list[tuple]) -> None:
 
 
 if __name__ == "__main__":
+	from common.cube import Positions as pos
+
 	print("hello")
 	#print(SOLVED)
 	print_cube(SOLVED)

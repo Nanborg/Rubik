@@ -3,6 +3,7 @@
 import unittest
 from common.cube import apply_move
 from common.moves import SOLVED
+from rotation_reference import to_stickers, reference_move
 
 MOVES = (
     "U", "U'", "U2",
@@ -21,11 +22,11 @@ def inverse_move(move):
 
     return move + "'"
 
-def play_sequence(state, moves):
-    result = list(state)
+def play_sequence(state, moves, move_function=apply_move):
+    result = state.copy()
 
     for move in moves:
-        result = apply_move(result, move)
+        result = move_function(result, move)
     return result
 
 class TestRotations(unittest.TestCase):
@@ -54,3 +55,12 @@ class TestRotations(unittest.TestCase):
                 result = play_sequence(SOLVED, sequence)
 
                 self.assertEqual(result, SOLVED)
+
+    def test_moves_against_reference(self):
+        for move in MOVES:
+            with self.subTest(move=move):
+                expected = play_sequence(
+                    to_stickers(SOLVED), (move,), reference_move
+                )
+                actual = to_stickers(play_sequence(SOLVED, (move,)))
+                self.assertEqual(actual, expected)
