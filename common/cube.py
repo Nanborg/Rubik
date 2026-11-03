@@ -1,7 +1,8 @@
 # TODO(shared): appliquer les mouvements et vérifier si le cube est résolu.
-from enum import Enum
+from enum import IntEnum
+from common.moves import SOLVED
 
-class Positions(Enum):
+class Positions(IntEnum):
 	# edges
 	FU = UF = 0
 	FR = RF = 1
@@ -25,3 +26,61 @@ class Positions(Enum):
 	DFL = FLD = LDF = LFD = FDL = DLF = 17
 	DBR = BRD = RDB = RBD = BDR = DRB = 18
 	DBL = BLD = LDB = LBD = BDL = DLB = 19
+
+FACE_CYCLES = {
+	"U": (
+	 (Positions.UF, Positions.UR, Positions.UB, Positions.UL),
+	 (Positions.URF, Positions.UBR, Positions.ULB, Positions.UFL)
+	),
+	"D": (
+	 (Positions.DF, Positions.DL, Positions.DB, Positions.DR),
+	 (Positions.DFR, Positions.DLF, Positions.DBL, Positions.DRB)
+	),
+    "L": (
+        (Positions.UL, Positions.BL, Positions.DL, Positions.FL),
+        (Positions.UFL, Positions.ULB, Positions.DBL, Positions.DLF),
+    ),
+    "R": (
+        (Positions.UR, Positions.FR, Positions.DR, Positions.BR),
+        (Positions.URF, Positions.DFR, Positions.DRB, Positions.UBR),
+    ),
+    "F": (
+        (Positions.UF, Positions.FL, Positions.DF, Positions.FR),
+        (Positions.URF, Positions.UFL, Positions.DLF, Positions.DFR),
+    ),
+    "B": (
+        (Positions.UB, Positions.BR, Positions.DB, Positions.BL),
+        (Positions.UBR, Positions.DRB, Positions.DBL, Positions.ULB),
+    ),
+}
+
+POSITION_FACE = (
+	"UF", "RF", "DF",
+	"UR", "BR", "DR",
+	"UB", "LB", "DB",
+	"UL", "FL", "DL",
+	"URF", "UFL", "UBR", "ULB",
+	"DFR", "DLF", "DRB", "DBL",
+)
+
+
+def cycle(cube: list[tuple], commutator: list, n: int) -> list[tuple]:
+    for i in range(len(commutator) - n):
+        cube[commutator[i]], cube[commutator[i + n]] = (
+            cube[commutator[i + n]],
+            cube[commutator[i]],
+        )
+    return cube
+
+def apply_move(state, move):
+	face = move[0]
+	turns = {"": 1, "2": 2, "'":3}[move[1:]]
+
+	if face not in FACE_CYCLES:
+		raise NotImplementedError(f"Rotation pas implémentée : {face}")
+	result = list(state)
+
+	for _ in range(turns):
+		for positions in FACE_CYCLES[face]:
+			cycle(result, positions, 1)
+	return result
