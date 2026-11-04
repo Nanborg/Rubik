@@ -1,10 +1,8 @@
 # TODO(Neon): résoudre la croix dans le repère convenu.
 
 from common.cube import Positions, apply_move
-from common.moves import SOLVED
+from common.moves import SOLVED, inverse_move
 from common.colors import Colors
-from collections import deque
-
 
 
 # Verifie les 4 arretes de la croix blance
@@ -40,6 +38,41 @@ def cross_key(state):
 
     return tuple(key)
 
+# Calcule le trajet des aretes pour un movement
+def edge_transitions(move):
+    moved = apply_move(SOLVED, move)
+    transitions = {}
+
+    for source, piece in enumerate(SOLVED[:12]):
+        destination = find_edge(moved, piece)
+
+        for color_index, color in enumerate(piece):
+            new_index = moved[destination].index(color)
+
+            transitions[source, color_index] = (
+                destination,
+                new_index,
+            )
+    return transitions
+
+# Explore un lvl de recherche
+# renvoie la prochaine frontiere et un point de rencontre
+def expand_cross_layer(frontier, paths, other_paths, transitions):
+    next_frontier = []
+
+    for current in frontier:
+        for move, table in transitions.items():
+            key = tuple(table[edge] for edge in current)
+            if key in paths:
+                continue
+            paths[key] = paths[current] + [move]
+
+            if key in other_paths:
+                return next_frontier, key
+            next_frontier.append(key)
+    return next_frontier, None
+
+
 # Prepare ke recherche des mouv pour resoudre la croix
 def solve_cross(state):
     if is_cross_solved(state):
@@ -51,23 +84,28 @@ def solve_cross(state):
         for suffix in ("", "'", "2")
     )
 
-    queue = deque([(list(state), [])])
-    visited = {cross_key(state)}
+    transitions = {move: edge_transitions(move) for move in moves}
+    start = cross_key(state)
+    goal = cross_key(SOLVED)
+    forward = [start]
+    backward = [goal]
 
-    while queue:
-        current, path = queue.popleft()
+    forward_paths = {start: []}
+    backward_paths = {goal: []}
 
-        for move in moves:
-            next_state = apply_move(current, move)
-            key = cross_key(next_state)
-
-            if key in visited:
-                continue
-
-            next_path = path + [move]
-            if is_cross_solved(next_state):
-                return next_path
-
-            visited.add(key)
-            queue.append((next_state, next_path))
+    while forward and backward:
+        if len(forward) <= len (backward):
+            forward, meeting = expand_cross_layer(
+                forward, forward_paths, backward_paths, transitions
+            )
+        else:
+            backward, meeting = expand_cross_layer(
+                backward, backward_paths, forward_paths, transitions
+            )
+        if meeting is not None:
+            end_path = [
+                inverse_move(move)
+                for move in reversed(backward_paths[meeting])
+            ]
+            return forward_paths[meeting] + end_path
     raise ValueError("Aucune solution pour la croix")

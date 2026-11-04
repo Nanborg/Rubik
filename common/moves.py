@@ -57,6 +57,15 @@ def cycle(cube: list[tuple], commutator:list[int], n:int) -> list[tuple]:
 		cube[commutator[i]], cube[commutator[i + n]] = cube[commutator[i + n]], cube[commutator[i]]
 	return cube
 
+#renvoie le mouvement qui annule celui recu
+def inverse_move(move):
+	if move.endswith("2"):
+		return move
+	if move.endswith("'"):
+		return move[0]
+	return move + "'"
+
+
 def print_sticker(col: Colors) -> None:
 	print(COLOR_TEXT[col] + "■ ", end="")
 
