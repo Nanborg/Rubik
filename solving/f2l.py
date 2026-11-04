@@ -1,9 +1,9 @@
 # TODO(Neon): résoudre les quatre paires coin/arête sans casser la croix.
 
-from common.cube import Positions
+from common.cube import Positions, apply_move
 from common.moves import SOLVED, inverse_move
 from solving.cross import is_cross_solved
-
+from solving.search import bidirectional_search
 
 F2L_PAIRS = (
     (Positions.URF, Positions.FR),
@@ -11,6 +11,13 @@ F2L_PAIRS = (
     (Positions.ULB, Positions.BL),
     (Positions.UBR, Positions.BR),
 )
+
+# inverse une sequence en inversant l'ordre et chaque mouvement
+def inverse_action(action):
+    result = []
+    for move in reversed(action):
+        result.append(inverse_move(move))
+    return tuple(result)
 
 # Retrouve une piece et l'orientationde sa premiere couleur
 def locate_piece(state, target):
@@ -41,6 +48,24 @@ def f2l_actions():
                 actions.append((opening, bottom, closing))
     return tuple(actions)
 
+# Calcul le trajet et l'orientation des pieces pour une sequence
+def f2l_transitions(action):
+    moved = list(SOLVED)
+    for move in action:
+        moved = apply_move(moved, move)
+    transitions = {}
+
+    for source, piece in enumerate(SOLVED):
+        destination, _ = locate_piece(moved, source)
+
+        for color_index, color in enumerate(piece):
+            new_index = moved[destination].index(color)
+            transitions[source, color_index] = (
+                destination,
+                new_index,
+            )
+    return transitions
+
 
 # Verifie si un coin et son arete sont bien en place/orientées
 def is_pair_solved(state, corner, edge):
@@ -59,3 +84,20 @@ def is_f2l_solved(state):
         if not is_pair_solved(state, corner, edge):
             return False
     return True
+
+# Resout une paire en conservant la croix
+# restaure aussi les paires indiques dans protected
+def solve_pair(state, pair, protected=()):
+    if not is_cross_solved(state):
+        raise ValueError("Ls croix doit etre resolue")
+    pairs = tuple(protected) + (pair,)
+    start = f2l_key(state, pairs)
+    goal = f2l_key(SOLVED, pairs)
+    if start == goal:
+        return []
+    transitions = { action: f2l_transitions(action) for action in f2l_actions()}
+    actions = bidirectional_search(start, goal, transitions, inverse_action)
+    solution = []
+    for action in actions:
+        solution.extend(action)
+    return solution
