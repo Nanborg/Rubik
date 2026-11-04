@@ -11,10 +11,14 @@
 
 ## 2. Solver CFOP -- Nicolsan
 
-- [ ] Fixer le repère des algorithmes CFOP avant de coder leurs cas.
+- [x] Fixer le repère des algorithmes CFOP avant de coder leurs cas.
 - [ ] `rubik` : arguments, erreurs, stdout contenant uniquement la solution.
 - [ ] Initialiser le cube à partir du mélange, sans simplement l'inverser.
-- [ ] Cross, F2L, OLL, PLL, avec vérification des postconditions.
+- [x] Première recherche de solution pour la croix, testée sur des mélanges courts.
+- [ ] Optimiser et tester la croix sur des mélanges longs.
+- [ ] F2L avec vérification du résultat.
+- [ ] OLL avec vérification du résultat.
+- [ ] PLL avec vérification du résultat.
 - [ ] Sortir uniquement U/R/F/D/L/B avec suffixe éventuel 2 ou apostrophe.
 - [ ] Documenter les algorithmes dans `data/cfop/` et simplifier les enchaînements.
 - [ ] Gérer le cube déjà résolu et toutes les erreurs sans crash.
