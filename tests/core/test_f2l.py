@@ -3,8 +3,8 @@ import unittest
 from common.cube import apply_move
 from common.moves import SOLVED
 from solving.f2l import is_f2l_solved, f2l_actions, F2L_PAIRS, f2l_transitions, f2l_key, solve_pair, is_pair_solved, solve_f2l
-from solving.cross import is_cross_solved
-
+from solving.cross import is_cross_solved, solve_cross
+from random import Random
 
 class TestF2L(unittest.TestCase):
     def test_solved_cube(self):
@@ -65,6 +65,9 @@ class TestF2L(unittest.TestCase):
         for corner, edge in protected:
             self.assertTrue(is_pair_solved(state, corner, edge))
         solution = solve_pair(state, pair, protected)
+        for move in solution:
+            state = apply_move(state, move)
+        self.assertTrue(is_f2l_solved(state))
 
     def test_solve_f2l(self):
         state = list(SOLVED)
@@ -78,3 +81,22 @@ class TestF2L(unittest.TestCase):
         for move in solution:
             state = apply_move(state, move)
         self.assertTrue(is_f2l_solved(state))
+
+    def test_cross_and_f2l(self):
+        moves = tuple(
+            face + suffix
+            for face in "UDLRFB"
+            for suffix in ("", "'", "2")
+        )
+
+        for seed in range(10):
+            with self.subTest(seed=seed):
+                random = Random(seed)
+                state = list(SOLVED)
+
+                for _ in range(20):
+                    state = apply_move(state, random.choice(moves))
+                for solver in (solve_cross, solve_f2l):
+                    for move in solver(state):
+                        state = apply_move(state, move)
+                self.assertTrue(is_f2l_solved(state))
