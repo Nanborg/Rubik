@@ -101,3 +101,20 @@ def solve_pair(state, pair, protected=()):
     for action in actions:
         solution.extend(action)
     return solution
+
+# Resout les 4 paires sans perdres les déjà faites
+# Renvoie les mouvement sans modifier le cube de depart
+def solve_f2l(state):
+    current = list(state)
+    solution = []
+    protected = []
+
+    for pair in F2L_PAIRS:
+        moves = solve_pair(current, pair, protected)
+        for move in moves:
+            current = apply_move(current, move)
+        solution.extend(moves)
+        protected.append(pair)
+    if not is_f2l_solved(current):
+        raise ValueError("F2L non resolu")
+    return solution

@@ -2,7 +2,7 @@ import unittest
 
 from common.cube import apply_move
 from common.moves import SOLVED
-from solving.f2l import is_f2l_solved, f2l_actions, F2L_PAIRS, f2l_transitions, f2l_key, solve_pair, is_pair_solved
+from solving.f2l import is_f2l_solved, f2l_actions, F2L_PAIRS, f2l_transitions, f2l_key, solve_pair, is_pair_solved, solve_f2l
 from solving.cross import is_cross_solved
 
 
@@ -54,3 +54,27 @@ class TestF2L(unittest.TestCase):
             state = apply_move(state, move)
         self.assertTrue(is_pair_solved(state, *pair))
         self.assertTrue(is_cross_solved(state))
+
+    def test_solve_pair_preserve_others(self):
+        pair = F2L_PAIRS[0]
+        protected = F2L_PAIRS[1:]
+        state = list(SOLVED)
+
+        for move in ("R'", "D", "R"):
+            state = apply_move(state, move)
+        for corner, edge in protected:
+            self.assertTrue(is_pair_solved(state, corner, edge))
+        solution = solve_pair(state, pair, protected)
+
+    def test_solve_f2l(self):
+        state = list(SOLVED)
+        for move in ("R'", "D", "R", "L", "D2", "L'"):
+            state = apply_move(state, move)
+        self.assertTrue(is_cross_solved(state))
+        self.assertFalse(is_f2l_solved(state))
+        initial = list(state)
+        solution = solve_f2l(state)
+        self.assertEqual(state, initial)
+        for move in solution:
+            state = apply_move(state, move)
+        self.assertTrue(is_f2l_solved(state))
