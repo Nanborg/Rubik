@@ -1,2 +1,23 @@
 # TODO(neon_05): lire le mélange, appeler CFOP et écrire uniquement la solution.
 # Entrée obligatoire autonome : aucune dépendance au renderer.
+
+from common.moves import SOLVED, parse_moves, simplify_move
+from common.cube import apply_move
+from solving.cross import solve_cross
+from solving.f2l import solve_f2l
+from time import perf_counter
+
+state = list(SOLVED)
+
+for move in parse_moves("R U F2 L' D B2 R2 U' F D2"):
+    state = apply_move(state, move)
+start = perf_counter()
+solution = []
+for name, solver in (("Croix", solve_cross), ("F2L", solve_f2l)):
+    moves = solver(state)
+    print(f"{name} : {len(moves)} mouvements")
+    solution.extend(moves)
+    for move in moves:
+        state = apply_move(state, move)
+print(f"Moves Total : {len(simplify_move(solution))} mouvements")
+print(f"Temps Total : {perf_counter() - start:.3f}s")
