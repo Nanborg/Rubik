@@ -121,3 +121,19 @@ if __name__ == "__main__":
 	#print(SOLVED)
 	print_cube(SOLVED)
 	print_cube(cycle(SOLVED, [pos.FU, pos.FR, pos.FD, pos.FL], 1))
+
+#Fusionne les moves consecutifs d'une meme face
+#supprime ceux qui s'annulent
+def simplify_move(moves):
+	result = []
+	for move in moves:
+		face = move[0]
+		turns = quarter_turns(move)
+		if result and result[-1][0] == face:
+			previous = result.pop()
+			turns = (quarter_turns(previous) + turns) % 4
+		if turns != 0:
+			suffix = {1: "", 2: "2", 3: "'"}[turns]
+			result.append(face + suffix)
+
+	return result

@@ -4,6 +4,9 @@ from common.cube import Positions, apply_move
 from common.moves import SOLVED, inverse_move
 from solving.cross import is_cross_solved
 from solving.search import bidirectional_search
+from itertools import permutations
+from common.moves import simplify_move
+from functools import cache
 
 F2L_PAIRS = (
     (Positions.URF, Positions.FR),
@@ -48,6 +51,7 @@ def f2l_actions():
                 actions.append((opening, bottom, closing))
     return tuple(actions)
 
+@cache
 # Calcul le trajet et l'orientation des pieces pour une sequence
 def f2l_transitions(action):
     moved = list(SOLVED)
@@ -104,12 +108,12 @@ def solve_pair(state, pair, protected=()):
 
 # Resout les 4 paires sans perdres les déjà faites
 # Renvoie les mouvement sans modifier le cube de depart
-def solve_f2l(state):
+def solve_f2l_order(state, order):
     current = list(state)
     solution = []
     protected = []
 
-    for pair in F2L_PAIRS:
+    for pair in order:
         moves = solve_pair(current, pair, protected)
         for move in moves:
             current = apply_move(current, move)
@@ -118,3 +122,14 @@ def solve_f2l(state):
     if not is_f2l_solved(current):
         raise ValueError("F2L non resolu")
     return solution
+
+def solve_f2l(state):
+    best = None
+
+    for order in permutations(F2L_PAIRS):
+        moves = solve_f2l_order(state, order)
+        candidate = simplify_move(moves)
+
+        if best is None or len(candidate) < len(best):
+            best = candidate
+    return best
