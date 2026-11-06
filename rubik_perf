@@ -1,13 +1,24 @@
 #!/usr/bin/env python3
 # Genere des melanges et affiche le bilan CFOP
 
+from argparse import ArgumentParser
 from time import perf_counter
 
 from common.moves import random_scramble
 from solving.cfop import solve
 
 
-moves = random_scramble()
+parser = ArgumentParser(description="Genere des melanges et mesure le solveur.")
+parser.add_argument("--count", type=int, default=100, help="nombre de melanges (100 par defaut)")
+parser.add_argument("--length", type=int, default=20, help="mouvements par melange (20 par defaut)")
+args = parser.parse_args()
+
+if args.count < 1 or args.length < 1:
+    parser.error("--count et --length doivent etre positifs")
+
+count = args.count
+length = args.length
+moves = random_scramble(length)
 print(f"Melange : {' '.join(moves)}\n")
 
 start = perf_counter()
@@ -20,14 +31,13 @@ for name, stage_moves in steps:
 print(f"\nTotal : {len(solution)} mouvements")
 print(f"Temps : {elapsed:.3f} s")
 
-# Inclut le premier melange dans le bilan des 100 resolutions
-count = 100
+# Inclut le premier melange dans le bilan
 total_moves = len(solution)
 total_time = elapsed
 
 print(f"\nCalcul de la moyenne sur {count} melanges...", flush=True)
 for _ in range(count - 1):
-    moves = random_scramble()
+    moves = random_scramble(length)
     start = perf_counter()
     solution = solve(moves)
     total_time += perf_counter() - start
