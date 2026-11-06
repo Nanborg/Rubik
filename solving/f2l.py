@@ -1,12 +1,13 @@
 # TODO(nicolsan): résoudre les quatre paires coin/arête sans casser la croix.
 
-from common.cube import Positions, apply_move, SOLVED
+from common.cube import Positions, apply_move, apply_moves, SOLVED
 from common.moves import inverse_move
 from solving.cross import is_cross_solved
 from solving.search import bidirectional_search
 from itertools import permutations
-from common.moves import simplify_move
+from common.moves import simplify_move, load_table_algorithms
 from functools import cache
+from pathlib import Path
 
 F2L_PAIRS = (
     (Positions.URF, Positions.FR),
@@ -89,6 +90,23 @@ def is_f2l_solved(state):
             return False
     return True
 
+# Retrouve le cas resolu par une sequence et verifie la croix
+def f2l_case(algorithm, pair):
+    state = apply_moves(SOLVED, inverse_action(algorithm))
+    if not is_cross_solved(state):
+        raise ValueError("Algorithme F2L incompatible avec la croix")
+    return f2l_key(state, (pair,))
+
+# Associe chaque cas de la paire a sa sequence la plus courte
+def build_f2l_table(algorithms, pair):
+    table = {f2l_key(SOLVED, (pair,)): ()}
+    for algorithm in algorithms:
+        candidate = tuple(simplify_move(algorithm))
+        key = f2l_case(candidate, pair)
+        if key not in table or len(candidate) < len(table[key]):
+            table[key] = candidate
+    return table
+
 # Resout une paire en conservant la croix
 # restaure aussi les paires indiques dans protected
 def solve_pair(state, pair, protected=()):
@@ -104,6 +122,12 @@ def solve_pair(state, pair, protected=()):
     solution = []
     for action in actions:
         solution.extend(action)
+    solution = simplify_move(solution)
+    candidate = load_f2l_table()[pair].get(f2l_key(state, (pair,)))
+    if candidate is not None and len(candidate) < len(solution):
+        result = apply_moves(state, candidate)
+        if is_cross_solved(result) and all(is_pair_solved(result, *p) for p in pairs):
+            return list(candidate)
     return solution
 
 # Resout les 4 paires sans perdres les déjà faites
@@ -133,3 +157,14 @@ def solve_f2l(state):
         if best is None or len(candidate) < len(best):
             best = candidate
     return best
+
+# Charge le fichier et construit les tables une seule fois
+@cache
+def load_f2l_table():
+    path = Path(__file__).resolve().parents[1] / "data/cfop/f2l.txt"
+    tables = {}
+    for pair in F2L_PAIRS:
+        section = " ".join(position.name for position in pair)
+        algorithms = load_table_algorithms(path, section)
+        tables[pair] = build_f2l_table(algorithms, pair)
+    return tables

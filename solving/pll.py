@@ -1,7 +1,7 @@
 # TODO(nicolsan): permuter la dernière couche et terminer l’alignement.
 from common.cube import SOLVED, apply_move
-from solving.oll import OLL_POSITIONS, is_oll_solved, load_oll_algorithms
-from common.moves import inverse_move, simplify_move
+from solving.oll import OLL_POSITIONS, is_oll_solved
+from common.moves import inverse_move, simplify_move, load_table_algorithms, rotate_algorithm
 from pathlib import Path
 from functools import cache
 
@@ -61,15 +61,16 @@ def solve_pll(state, table=None ):
         raise ValueError("Cas hors table")
     return best
 
-
 #lit les sequence di fichier pll
 def load_pll_algorithms(path):
-    return load_oll_algorithms(path)
-
-
+    return load_table_algorithms(path)
 
 @cache
 def load_pll_table():
     path = Path(__file__).resolve().parents[1] / "data/cfop/pll.txt"
-    algorithms = load_oll_algorithms(path)
+    algorithms = [
+        rotate_algorithm(algorithm, turns)
+        for algorithm in load_table_algorithms(path)
+        for turns in range(4)
+    ]
     return build_pll_table(algorithms)

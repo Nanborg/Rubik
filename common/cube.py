@@ -192,3 +192,9 @@ def apply_move(state, move):
 					face,
 				)
 	return result
+
+def apply_moves(state, moves):
+	result = list(state)
+	for move in moves:
+		result = apply_move(result, move)
+	return result

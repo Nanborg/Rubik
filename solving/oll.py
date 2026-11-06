@@ -2,7 +2,7 @@
 
 from common.colors import Colors
 from common.cube import Positions, apply_move, SOLVED
-from common.moves import inverse_move, simplify_move, parse_moves
+from common.moves import inverse_move, simplify_move, load_table_algorithms, rotate_algorithm
 from solving.f2l import is_f2l_solved
 from pathlib import Path
 from functools import cache
@@ -39,7 +39,6 @@ def oll_case(algorithm):
         raise ValueError("F2L est cassé")
     return oll_key(state)
 
-
 # Associe chaque cas OLL a sa sequence
 # Garde la plus courte si plusieurs fonctionnent
 def build_oll_table(algorithms):
@@ -73,19 +72,16 @@ def solve_oll(state, table=None):
         raise ValueError("Cas OLL absent de la table")
     return best
 
-# Lit les algorithmes du fichier
-def load_oll_algorithms(path):
-    algorithms = []
-    with open(path, encoding="utf-8") as file:
-        for line in file:
-            text = line.strip()
-            if text:
-                algorithms.append(parse_moves(text))
-    return algorithms
+# Conserve le nom utilise par les anciens appels
+load_oll_algorithms = load_table_algorithms
 
 # Charge le fichier et construit la table une seule fois
 @cache
 def load_oll_table():
     path = Path(__file__).resolve().parents[1] / "data/cfop/oll.txt"
-    algorithms = load_oll_algorithms(path)
+    algorithms = [
+        rotate_algorithm(algorithm, turns)
+        for algorithm in load_table_algorithms(path)
+        for turns in range(4)
+    ]
     return build_oll_table(algorithms)

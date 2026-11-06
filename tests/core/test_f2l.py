@@ -6,6 +6,20 @@ from solving.cross import is_cross_solved, solve_cross
 from random import Random
 
 class TestF2L(unittest.TestCase):
+    # Verifie les cas du fichier et toutes leurs orientations
+    def test_f2l_table(self):
+        from common.cube import apply_moves
+        from solving.f2l import load_f2l_table, inverse_action
+
+        for pair, table in load_f2l_table().items():
+            self.assertEqual(len(table), 384)
+            for key, algorithm in table.items():
+                with self.subTest(pair=pair, key=key):
+                    state = apply_moves(SOLVED, inverse_action(algorithm))
+                    self.assertEqual(f2l_key(state, (pair,)), key)
+                    self.assertTrue(is_cross_solved(state))
+                    self.assertTrue(is_pair_solved(apply_moves(state, algorithm), *pair))
+
     def test_solved_cube(self):
         self.assertTrue(is_f2l_solved(SOLVED))
     def test_last_layer_move(self):

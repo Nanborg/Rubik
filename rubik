@@ -1,24 +1,37 @@
-# TODO(nicolsan): lire le mélange, appeler CFOP et écrire uniquement la solution.
-# Entrée obligatoire autonome : aucune dépendance au renderer.
+# Genere un melange et affiche le bilan CFOP
 
-from common.moves import parse_moves, simplify_move
-from common.cube import apply_move, SOLVED
-from solving.cross import solve_cross
-from solving.f2l import solve_f2l
-from solving.oll import solve_oll
 from time import perf_counter
 
-state = list(SOLVED)
+from common.moves import random_scramble
+from solving.cfop import solve
 
-for move in parse_moves("R U F2 L' D B2 R2 U' F D2"):
-    state = apply_move(state, move)
+
+moves = random_scramble()
+print(f"Melange : {' '.join(moves)}\n")
+
 start = perf_counter()
-solution = []
-for name, solver in (("Croix", solve_cross), ("F2L", solve_f2l), ("OLL", solve_oll)):
-    moves = solver(state)
-    print(f"{name} : {len(moves)} mouvements")
-    solution.extend(moves)
-    for move in moves:
-        state = apply_move(state, move)
-print(f"Moves Total : {len(simplify_move(solution))} mouvements")
-print(f"Temps Total : {perf_counter() - start:.3f}s")
+solution, steps = solve(moves, with_steps=True)
+elapsed = perf_counter() - start
+
+for name, stage_moves in steps:
+    print(f"{name} : {len(stage_moves)} mouvements")
+
+print(f"\nTotal : {len(solution)} mouvements")
+print(f"Temps : {elapsed:.3f} s")
+
+# Inclut le premier melange dans le bilan des 100 resolutions
+count = 100
+total_moves = len(solution)
+total_time = elapsed
+
+print(f"\nCalcul de la moyenne sur {count} melanges...", flush=True)
+for _ in range(count - 1):
+    moves = random_scramble()
+    start = perf_counter()
+    solution = solve(moves)
+    total_time += perf_counter() - start
+    total_moves += len(solution)
+
+print(f"\nMelanges testes : {count}")
+print(f"Mouvements moyens : {total_moves / count:.2f}")
+print(f"Temps moyen : {total_time / count:.3f} s")
