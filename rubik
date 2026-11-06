@@ -1,39 +1,11 @@
 #!/usr/bin/env python3
-# Lit un melange ou en genere un et affiche le bilan CFOP
+# Affiche uniquement la solution du melange fourni
 
 from sys import argv
-from time import perf_counter
 
-from common.moves import parse_moves, random_scramble
+from common.moves import parse_moves
 from solving.cfop import solve
 
 
-moves = parse_moves(argv[1]) if len(argv) > 1 else random_scramble()
-print(f"Melange : {' '.join(moves)}\n")
-
-start = perf_counter()
-solution, steps = solve(moves, with_steps=True)
-elapsed = perf_counter() - start
-
-for name, stage_moves in steps:
-    print(f"{name} : {len(stage_moves)} mouvements")
-
-print(f"\nTotal : {len(solution)} mouvements")
-print(f"Temps : {elapsed:.3f} s")
-
-# Inclut le premier melange dans le bilan des 100 resolutions
-count = 100
-total_moves = len(solution)
-total_time = elapsed
-
-print(f"\nCalcul de la moyenne sur {count} melanges...", flush=True)
-for _ in range(count - 1):
-    moves = random_scramble()
-    start = perf_counter()
-    solution = solve(moves)
-    total_time += perf_counter() - start
-    total_moves += len(solution)
-
-print(f"\nMelanges testes : {count}")
-print(f"Mouvements moyens : {total_moves / count:.2f}")
-print(f"Temps moyen : {total_time / count:.3f} s")
+moves = parse_moves(argv[1])
+print(" ".join(solve(moves)))
