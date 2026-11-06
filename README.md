@@ -2,106 +2,81 @@
 
 # Rubik
 
-Résolveur de Rubik’s Cube 3×3×3 entièrement en Python, avec l’algorithme CFOP.
+Résolveur de Rubik’s Cube 3×3×3 en Python avec la méthode CFOP.
+Croix blanche sur U, dernière couche jaune sur D.
 
-## Priorité : la partie obligatoire
+## Lancer les essais
+
+Python 3.10 ou plus récent. Le solveur utilise la bibliothèque standard.
 
 ```sh
-./rubik "F R U2 B' L' D'"
+python3 rubik
 ```
 
-Le programme reçoit le mélange et affiche uniquement les mouvements de solution.
-Objectifs du sujet : **moyenne ≤ 50 mouvements HTM et temps maximal ≤ 3 secondes
-par résolution**, démarrage Python et affichage de la solution compris.
-Le choix de CFOP ne garantit pas ces performances : elles doivent être mesurées.
+Le programme génère 100 mélanges de 20 mouvements.
+Il détaille le premier, puis affiche les mouvements moyens et le temps moyen.
+Le premier calcul charge les tables. Les suivants réutilisent les caches.
+Le temps affiché exclut le démarrage Python et l’affichage.
 
-Le renderer 3D est un **bonus secondaire**, lancé séparément. La résolution
-ne charge aucune bibliothèque graphique et n’attend aucune animation.
-Les bonus ne sont évalués que si la partie obligatoire est parfaite.
+## État du projet
 
-## Répartition
+- Croix, F2L, OLL et PLL implémentés.
+- Tables F2L, OLL et PLL chargées en cache.
+- Comparaison des 24 ordres F2L sur le total CFOP simplifié.
+- Affichage 3D avec Pygame en développement, indépendant du solveur.
 
-| Partie | Responsable | Rôle |
-| --- | --- | --- |
-| Solver obligatoire | nicolsan | Cross → F2L → OLL → PLL |
-| Renderer bonus | neon_05 | Visualisation 3D et lecture des mouvements |
-| Modèle commun et validation | Ensemble | Couleurs, état du cube, rotations, tests et performances |
+L’entrée du sujet reste à faire : `./rubik "<mélange>"`.
+Elle devra afficher uniquement la solution et gérer les erreurs.
+Le sujet demande une moyenne ≤ 50 HTM et un temps maximal ≤ 3 secondes.
+Le benchmark complet reste à écrire dans `tools/benchmark.py`.
 
-neon_05 peut préparer la 3D avec des séquences de test sans bloquer le solver.
-La vérification des solutions et les benchmarks devront fonctionner sans renderer.
-
-## État actuel
-
-Le modèle commun, le parser des 18 mouvements et les rotations sont implémentés
-avec leurs tests. La croix blanche est résolue par recherche bidirectionnelle.
-F2L est en cours de développement.
-
-OLL, PLL, l’orchestration CFOP, les entrées CLI, le benchmark et le rendu 3D
-restent à implémenter. Le programme ne résout pas encore un cube complet.
-
-## Organisation
+## Structure des fichiers
 
 ```text
-rubik                       unique entrée du solver : arguments et sortie
+rubik                   essais et statistiques
 common/
-  colors.py                 Enum des six couleurs
-  state.py                  12 arêtes + 8 coins ordonnés
-  moves.py                  notation et parsing
-  cube.py                   rotations et état résolu
-solving/                    nicolsan — CFOP
-  cfop.py                   orchestration
-  cross.py
-  f2l.py
-  oll.py
-  pll.py
-tools/benchmark.py          temps total et nombre de mouvements
-tests/core/                 modèle, parsing, rotations, solutions, performances
-data/cfop/                  algorithmes documentés à ajouter
-render.py                   entrée du renderer bonus : arguments et stdin
-rendering/                  neon_05 — bonus indépendant
-  scene.py                  cube 3D, stickers et caméra
-  animation.py              mouvements et contrôles de lecture
-  verifier.py               vérifications propres à la lecture visuelle
-tests/renderer/             tests du bonus
-docs/                       références, contrat et tâches
+  colors.py             couleurs
+  cube.py               positions, etat du cube et rotations
+  moves.py              mouvements, tables et melanges
+solving/
+  cfop.py               orchestration et choix de la solution
+  cross.py              croix blanche
+  f2l.py                paires coin/arete
+  oll.py                orientation de la derniere couche
+  pll.py                permutation de la derniere couche
+  search.py             recherche bidirectionnelle
+data/cfop/              tables F2L, OLL et PLL
+tests/core/             tests du solveur
+tools/benchmark.py      benchmark a completer
+render.py               entree de l'affichage 3D
+rendering/              modules d'affichage 3D
+tests/renderer/         tests de l'affichage 3D
+docs/                   sujet et documentation
 ```
 
-## Commandes de travail
-
-Python 3.10 ou plus récent et make pour le noyau. La bibliothèque graphique
-reste à choisir et ne sera nécessaire qu’au bonus.
+## Commandes
 
 | Commande | Rôle |
 | --- | --- |
-| `make` | Vérifier la syntaxe du noyau obligatoire |
-| `make test` | Lancer uniquement les tests du noyau |
-| `make bench` | Mesurer le solver en processus séparés, une fois implémenté |
-| `make check-renderer` | Vérifier la syntaxe du bonus |
-| `make test-renderer` | Lancer les tests du renderer séparément |
-| `make clean`, `make fclean`, `make re` | Nettoyer les caches Python / revérifier le noyau |
+| `make` | Vérifier la syntaxe du solveur |
+| `make test` | Lancer les tests du noyau |
+| `make bench` | Benchmark encore à implémenter |
+| `make check-renderer` | Vérifier la syntaxe de l’affichage 3D |
+| `make test-renderer` | Tester l’affichage 3D |
+| `make clean` | Nettoyer les caches Python |
 
-Les tests du parser, des rotations, de la croix et des outils F2L sont présents.
-Le benchmark reste à écrire.
+## Répartition
 
-## Visualisation facultative, après résolution
-
-Interface prévue, à implémenter :
-
-```sh
-MIX="F R U2 B' L' D'"
-./rubik "$MIX" > solution.txt &&
-./render.py "$MIX" --output 3d --speed 2 --delay 0.5 < solution.txt
-```
-
-Le renderer reconstruit l’état initial à partir du mélange et rejoue la solution
-lue sur stdin. Son démarrage et la durée des animations sont séparés du temps
-mesuré pour `./rubik`. L’import d’un état JSON est une extension facultative.
+- nicolsan : solveur CFOP.
+- neon_05 : affichage 3D.
+- Ensemble : modèle commun et intégration.
 
 ## Documents
 
+- [Sujet](docs/SUJET.md) et [PDF](docs/Rubik.subject.pdf).
+- [Conventions](docs/CONVENTIONS.md).
+- [Tables et provenance](docs/ALGORITHMES.md).
+- [Checklist](docs/Checklist_2.md).
+- [Vérifications finales](docs/POINTS_A_VERIFIER.md).
+- [Affichage 3D](docs/RENDERER.md).
 - [Auteurs](docs/author).
-- [Sujet résumé](docs/SUJET.md) et [PDF](docs/Rubik.subject.pdf).
-- [Points à vérifier](docs/POINTS_A_VERIFIER.md).
-- [Conventions du modèle et interfaces](docs/CONVENTIONS.md).
-- [Checklist : obligatoire puis bonus](docs/Checklist_2.md).
-- [Renderer bonus](docs/RENDERER.md).

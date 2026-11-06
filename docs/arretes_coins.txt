@@ -1,0 +1,27 @@
+aretes
+
+UR : (blanc, rouge), (rouge, blanc)
+UF : (blanc, vert), (vert, blanc)
+UL : (blanc, orange), (orange, blanc)
+UB : (blanc, bleu), (bleu, blanc)
+
+DR : (jaune, rouge), (rouge, jaune)
+DF : (jaune, vert), (vert, jaune)
+DL : (jaune, orange), (orange, jaune)
+DB : (jaune, bleu), (bleu, jaune)
+
+FR : (rouge, vert), (vert, rouge)
+FL : (vert, orange), (orange, vert)
+BL : (orange, bleu), (bleu, orange)
+BR : (bleu, rouge), (rouge, bleu)
+
+pour les coins
+URF : (blanc, rouge, vert), (rouge, vert, blanc), (vert, blanc, rouge)
+UFL : (blanc, vert, orange), (vert, orange, blanc), (orange, blanc, vert)
+ULB : (blanc, orange, bleu), (orange, bleu, blanc), (bleu, blanc, orange)
+UBR : (blanc, bleu, rouge), (bleu, rouge, blanc), (rouge, blanc, bleu)
+
+DFR : (jaune, vert, rouge), (vert, rouge, jaune), (rouge, jaune, vert)
+DLF : (jaune, orange, vert), (orange, vert, jaune), (vert, jaune, orange)
+DBL : (jaune, bleu, orange), (bleu, orange, jaune), (orange, jaune, bleu)
+DRB : (jaune, rouge, bleu), (rouge, bleu, jaune), (bleu, jaune, rouge)

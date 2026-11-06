@@ -1,11 +1,11 @@
 # Rubik — Modèle commun, solver obligatoire et renderer bonus
 
 Contrat proposé pour votre travail à deux ; les détails sont à valider ensemble.
-Aucune des API décrites n’est encore implémentée. Les exemples sont documentaires.
+Le modèle et le solver sont implémentés. La CLI et les interfaces du renderer restent à terminer.
 
 ## Répartition
 
-neon_05 développe `solving/`. nicolsan développe `rendering/`.
+nicolsan développe `solving/`. neon_05 développe `rendering/`.
 `common/`, les interfaces, les tests d'intégration et les documents se décident
 ensemble. Le solver fonctionne sans importer le renderer ou une bibliothèque 3D.
 
@@ -19,16 +19,18 @@ Les bonus ne sont évalués que si la partie obligatoire est parfaite.
 
 ## Entrées et sorties
 
+Contrat cible : `rubik` lance actuellement des essais aléatoires.
+
 - `./rubik "<mélange>"` est l’unique entrée du solver.
 - Le parsing CLI et les erreurs sont à écrire dans `rubik`, le calcul dans `solving/`.
 - Entrée : un argument contenant le mélange, appliqué à un cube résolu.
 - Sortie standard : mouvements de solution séparés par un espace, puis newline.
-- Cube déjà résolu : ligne vide, une fois le solver implémenté.
+- Cube déjà résolu : ligne vide.
 - Erreurs et diagnostics sur stderr ; aucun log sur stdout.
 - Codes : 0 succès, 1 entrée invalide, 2 erreur interne ou fonction non implémentée.
 - Ne pas renvoyer simplement l'inverse du mélange.
 
-Renderer bonus, entrée et options gérées dans `render.py` :
+Affichage 3D bonus, entrée et options prévues dans `render.py` :
 ```sh
 ./render.py "<mélange initial>" --output 3d --speed 1 --delay 0 < solution.txt
 ./render.py --state initial.json --output logs < solution.txt
@@ -63,58 +65,59 @@ Ces deux sorties restent à implémenter.
 
 Le repère 3D est direct : X vers la droite, Y vers le haut, Z vers l'avant.
 
-## État du cube : deux listes ordonnées
+## État du cube : une liste ordonnée
 
-`Color` est une Enum partagée, pas une couleur propre à une bibliothèque 3D.
-`CubeState` contient `edges` (12 tuples de deux couleurs) et `corners`
-(8 tuples de trois couleurs). Les six centres sont fixes et implicites.
+`Colors` est une Enum partagée, pas une couleur propre à une bibliothèque 3D.
+L'état contient 12 tuples d'arêtes puis 8 tuples de coins dans une seule liste.
+Il est défini dans `common/cube.py`. Les six centres sont fixes et implicites.
 
 L'index décrit **la position actuelle**, pas l'identité d'une pièce.
 
-- Arêtes : `UR UF UL UB DR DF DL DB FR FL BL BR`.
-- Coins : `URF UFL ULB UBR DFR DLF DBL DRB`.
+- Arêtes : `UF RF DF UR BR DR UB LB DB UL FL DL`.
+- Coins : `URF UFL UBR ULB DFR DLF DRB DBL`.
 
-Dans chaque tuple, l'ordre suit les lettres de sa position :
-`edges[1] = (WHITE, GREEN)` signifie WHITE sur U, GREEN sur F à la position UF.
-`corners[0] = (WHITE, RED, GREEN)` signifie WHITE sur U, RED sur R,
-GREEN sur F à la position URF.
+Dans chaque tuple, l'ordre suit `POSITION_FACE` :
+`state[Positions.UF] = (WHITE, GREEN)` signifie WHITE sur U, GREEN sur F.
+`state[Positions.URF] = (WHITE, RED, GREEN)` signifie WHITE sur U, RED sur R,
+GREEN sur F. Les alias de `Positions` ne changent pas cet ordre.
 
 **Ne pas trier les couleurs des tuples** : leur ordre porte l'orientation.
 Une simple collection de pièces sans positions ni orientation ne suffit pas.
-Les deux listes correspondent à l'idée « 12 arêtes + 8 coins », en séparant
-clairement leurs tailles et leur rôle.
+La liste contient d'abord les 12 arêtes, puis les 8 coins.
 
 ```python
-from common.state import CubeState
+from common.cube import Positions, SOLVED
+from common.colors import Colors
 
-state = CubeState.solved()
-# state.edges[1] == (Color.WHITE, Color.GREEN)
-# state.corners[0] == (Color.WHITE, Color.RED, Color.GREEN)
+state = list(SOLVED)
+# state[Positions.UF] == (Colors.WHITE, Colors.GREEN)
+# state[Positions.URF] == (Colors.WHITE, Colors.RED, Colors.GREEN)
 ```
 
-Le modèle, l'état résolu, la validation physique et les rotations
-sont tous à implémenter dans le modèle commun.
+Le modèle, l'état résolu et les rotations sont implémentés.
+La validation d'un état importé reste à faire.
 
 ## Extension facultative : format JSON des états
 
 Après le noyau obligatoire, à envisager pour `--state` et les fixtures du bonus :
 objet avec `version: 1`, `edges` et `corners`.
 Les couleurs sont les valeurs textuelles de l'Enum, par exemple `"WHITE"`.
-Les listes et tuples respectent exactement les ordres ci-dessus.
+Ce format reste une proposition distincte de la liste interne du cube.
 
 Valider : longueurs, couleurs connues, inventaire des pièces, absence de doublons,
 orientation des arêtes et coins, et parité compatible des permutations.
 Un état physiquement impossible doit être rejeté avant l'animation.
-L'import/export JSON est à implémenter, comme le reste du modèle.
+L'import/export JSON reste à implémenter.
 
-## API prévue
+## API implémentée
 
-- `parse_moves(text) -> tuple[str, ...]` : parsing commun, à implémenter.
+- `parse_moves(text) -> tuple[str, ...]` : parsing commun.
 - `solve(moves) -> list[str]` : solution CFOP ; reçoit le mélange parsé.
-- `CubeState.solved()` : nouvel état résolu indépendant à chaque appel.
-- `apply_move(state, move) -> CubeState` : retourne un nouvel état, à implémenter.
-- `apply_moves(state, moves) -> CubeState` : même convention, à implémenter.
-- `is_solved(state) -> bool` : comparer au repère résolu, à implémenter.
+- `solve(moves, with_steps=True)` : solution et détail des étapes.
+- `list(SOLVED)` : nouvel état résolu indépendant à chaque appel.
+- `apply_move(state, move) -> list[tuple]` : retourne un nouvel état.
+- `apply_moves(state, moves) -> list[tuple]` : même convention.
+- `is_cube_solved(state) -> bool` : compare à `SOLVED`, dans `solving/pll.py`.
 
 L'animation garde un état de départ, une progression visuelle et un état cible.
 Le nouvel état logique n'est validé qu'à la fin du mouvement ; pas de petites

@@ -1,6 +1,6 @@
 # Rubik — Résumé du sujet (v5)
 
-Le sujet complet est en PDF (à ajouter dans `docs/`). Ici : l'essentiel.
+Le sujet complet est dans [Rubik.subject.pdf](Rubik.subject.pdf). Ici : l'essentiel.
 
 ## À faire
 
