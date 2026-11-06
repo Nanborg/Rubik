@@ -1,12 +1,14 @@
-# Genere un melange et affiche le bilan CFOP
+#!/usr/bin/env python3
+# Lit un melange ou en genere un et affiche le bilan CFOP
 
+from sys import argv
 from time import perf_counter
 
-from common.moves import random_scramble
+from common.moves import parse_moves, random_scramble
 from solving.cfop import solve
 
 
-moves = random_scramble()
+moves = parse_moves(argv[1]) if len(argv) > 1 else random_scramble()
 print(f"Melange : {' '.join(moves)}\n")
 
 start = perf_counter()
