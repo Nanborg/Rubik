@@ -1,1 +1,1 @@
-# TODO(Neon): vérifier que mélange + solution résout le cube et les étapes CFOP.
+# TODO(nicolsan): vérifier que mélange + solution résout le cube et les étapes CFOP.

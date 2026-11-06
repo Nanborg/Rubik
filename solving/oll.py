@@ -1,4 +1,4 @@
-# TODO(Neon): orienter la dernière couche sans casser F2L.
+# TODO(nicolsan): orienter la dernière couche sans casser F2L.
 
 from common.colors import Colors
 from common.cube import Positions, apply_move, SOLVED

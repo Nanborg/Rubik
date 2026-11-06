@@ -1,4 +1,4 @@
-# TODO(Neon): résoudre la croix dans le repère convenu.
+# TODO(nicolsan): résoudre la croix dans le repère convenu.
 
 from common.cube import Positions, apply_move, SOLVED
 from common.moves import inverse_move

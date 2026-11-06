@@ -1,4 +1,4 @@
-# TODO(Neon): résoudre les quatre paires coin/arête sans casser la croix.
+# TODO(nicolsan): résoudre les quatre paires coin/arête sans casser la croix.
 
 from common.cube import Positions, apply_move, SOLVED
 from common.moves import inverse_move

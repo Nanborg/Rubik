@@ -1,4 +1,4 @@
-# TODO(neon_05): lire le mélange, appeler CFOP et écrire uniquement la solution.
+# TODO(nicolsan): lire le mélange, appeler CFOP et écrire uniquement la solution.
 # Entrée obligatoire autonome : aucune dépendance au renderer.
 
 from common.moves import parse_moves, simplify_move

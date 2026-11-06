@@ -1,1 +1,1 @@
-# TODO(Neon): orchestrer Cross, F2L, OLL et PLL.
+# TODO(nicolsan): orchestrer Cross, F2L, OLL et PLL.
