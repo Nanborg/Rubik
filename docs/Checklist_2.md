@@ -2,13 +2,14 @@
 
 ## 1. Modèle commun (minimum partagé)
 
-- [ ] Définir les couleurs Enum et le repère partagé. -> Nicolsan
-- [ ] Définir les 12 arêtes et 8 coins, leurs positions et orientations. -> Neon
-- [ ] Construire l'état résolu et parser les 18 mouvements autorisés. -> Neon
-- [ ] Implémenter les rotations sans dépendance graphique. -> Nicolsan
-- [ ] Tester chaque mouvement, puis quatre quarts de tour, deux demi-tours et mouvement + inverse. -> Nicolsan
+- [x] Définir les couleurs Enum et le repère partagé. -> Neon
+- [x] Définir les 12 arêtes et 8 coins, leurs positions et orientations. -> Neon
+- [x] Construire l'état résolu -> Neon
+- [x] parser les 18 mouvements autorisés. -> nicolsan
+- [x] Implémenter les rotations sans dépendance graphique. -> nicolsan
+- [x] Tester chaque mouvement, puis quatre quarts de tour, deux demi-tours et mouvement + inverse. -> nicolsan
 
-## 2. Solver CFOP -- Neon
+## 2. Solver CFOP -- Nicolsan
 
 - [ ] Fixer le repère des algorithmes CFOP avant de coder leurs cas.
 - [ ] `rubik` : arguments, erreurs, stdout contenant uniquement la solution.
@@ -20,7 +21,7 @@
 - [ ] `tests/core/test_solutions.py` : mélange + solution = cube résolu, mélanges reproductibles, cas simples, difficiles, superflip.
 - [ ] `tools/benchmark.py` : un lancement de `./rubik` par mesure, démarrage Python inclus. Moyenne ≤ 50 HTM, maximum ≤ 3 s, optimisation si besoin.
 
-## 3. Rendu 3D simple -- Nicolsan
+## 3. Rendu 3D simple -- Neon_05
 
 - [ ] Choisir une bibliothèque graphique et justifier ce choix.
 - [ ] `render.py` : mélange initial, instructions sur stdin, vitesse et délai.
