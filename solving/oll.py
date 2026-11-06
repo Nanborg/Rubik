@@ -1,8 +1,8 @@
 # TODO(Neon): orienter la dernière couche sans casser F2L.
 
 from common.colors import Colors
-from common.cube import Positions, apply_move
-from common.moves import SOLVED, inverse_move, simplify_move, parse_moves
+from common.cube import Positions, apply_move, SOLVED
+from common.moves import inverse_move, simplify_move, parse_moves
 from solving.f2l import is_f2l_solved
 from pathlib import Path
 from functools import cache

@@ -1,8 +1,7 @@
 
 import unittest
 
-from common.cube import apply_move, Positions
-from common.moves import SOLVED
+from common.cube import apply_move, Positions, SOLVED
 from solving.cross import is_cross_solved, find_edge, cross_key, solve_cross
 from random import Random
 

@@ -1,7 +1,7 @@
 # TODO(Neon): résoudre les quatre paires coin/arête sans casser la croix.
 
-from common.cube import Positions, apply_move
-from common.moves import SOLVED, inverse_move
+from common.cube import Positions, apply_move, SOLVED
+from common.moves import inverse_move
 from solving.cross import is_cross_solved
 from solving.search import bidirectional_search
 from itertools import permutations

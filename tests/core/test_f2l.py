@@ -1,7 +1,6 @@
 import unittest
 
-from common.cube import apply_move
-from common.moves import SOLVED
+from common.cube import apply_move, SOLVED
 from solving.f2l import is_f2l_solved, f2l_actions, F2L_PAIRS, f2l_transitions, f2l_key, solve_pair, is_pair_solved, solve_f2l
 from solving.cross import is_cross_solved, solve_cross
 from random import Random

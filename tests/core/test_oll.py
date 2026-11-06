@@ -1,8 +1,8 @@
 
 import unittest
 
-from common.cube import apply_move
-from common.moves import SOLVED, inverse_move
+from common.cube import apply_move, SOLVED
+from common.moves import inverse_move
 from solving.f2l import is_f2l_solved
 from solving.oll import is_oll_solved, build_oll_table, solve_oll, load_oll_algorithms
 from pathlib import Path

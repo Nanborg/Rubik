@@ -1,7 +1,7 @@
 # TODO(Neon): résoudre la croix dans le repère convenu.
 
-from common.cube import Positions, apply_move
-from common.moves import SOLVED, inverse_move
+from common.cube import Positions, apply_move, SOLVED
+from common.moves import inverse_move
 from common.colors import Colors
 from solving.search import bidirectional_search
 

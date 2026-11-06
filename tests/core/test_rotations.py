@@ -1,8 +1,7 @@
 # TODO(shared): tester les 18 mouvements avec des états attendus indépendants.
 
 import unittest
-from common.cube import apply_move
-from common.moves import SOLVED
+from common.cube import apply_move, SOLVED
 from rotation_reference import to_stickers, reference_move
 
 MOVES = (
