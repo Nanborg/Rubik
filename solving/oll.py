@@ -2,8 +2,10 @@
 
 from common.colors import Colors
 from common.cube import Positions, apply_move
-from common.moves import SOLVED, inverse_move, simplify_move
+from common.moves import SOLVED, inverse_move, simplify_move, parse_moves
 from solving.f2l import is_f2l_solved
+from pathlib import Path
+from functools import cache
 
 OLL_POSITIONS = (
     Positions.DF, Positions.DR,
@@ -51,9 +53,11 @@ def build_oll_table(algorithms):
 
 #Cherche le cas en essayant 4 orientations de D
 # Renvoie la sequence la plus courte (preserve cube)
-def solve_oll(state, table):
+def solve_oll(state, table=None):
     if not is_f2l_solved(state):
         raise ValueError("F2L doit etre resolu")
+    if table is None:
+        table = load_oll_table()
     best = None
     for setup in ((), ("D",), ("D2",), ("D'",)):
         current = list(state)
@@ -68,3 +72,20 @@ def solve_oll(state, table):
     if best is None:
         raise ValueError("Cas OLL absent de la table")
     return best
+
+# Lit les algorithmes du fichier
+def load_oll_algorithms(path):
+    algorithms = []
+    with open(path, encoding="utf-8") as file:
+        for line in file:
+            text = line.strip()
+            if text:
+                algorithms.append(parse_moves(text))
+    return algorithms
+
+# Charge le fichier et construit la table une seule fois
+@cache
+def load_oll_table():
+    path = Path(__file__).resolve().parents[1] / "data/cfop/oll.txt"
+    algorithms = load_oll_algorithms(path)
+    return build_oll_table(algorithms)
