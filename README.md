@@ -5,12 +5,20 @@
 Résolveur de Rubik’s Cube 3×3×3 en Python avec la méthode CFOP.
 Croix blanche sur U, dernière couche jaune sur D.
 
-## Lancer les essais
+## Résoudre un mélange
 
 Python 3.10 ou plus récent. Le solveur utilise la bibliothèque standard.
 
 ```sh
-python3 rubik
+./rubik "R U F2"
+```
+
+La sortie contient uniquement la solution. Les erreurs vont sur stderr.
+
+## Lancer les essais
+
+```sh
+./rubik_perf --count 100 --length 20
 ```
 
 Le programme génère 100 mélanges de 20 mouvements.
@@ -25,15 +33,14 @@ Le temps affiché exclut le démarrage Python et l’affichage.
 - Comparaison des 24 ordres F2L sur le total CFOP simplifié.
 - Affichage 3D avec Pygame en développement, indépendant du solveur.
 
-L’entrée du sujet reste à faire : `./rubik "<mélange>"`.
-Elle devra afficher uniquement la solution et gérer les erreurs.
+L’entrée `./rubik "<mélange>"` et la gestion des erreurs sont implémentées.
 Le sujet demande une moyenne ≤ 50 HTM et un temps maximal ≤ 3 secondes.
-Le benchmark complet reste à écrire dans `tools/benchmark.py`.
+Les essais et statistiques sont disponibles dans `rubik_perf`.
 
 ## Structure des fichiers
 
 ```text
-rubik                   essais et statistiques
+rubik                   melange en argument et solution sur stdout
 common/
   colors.py             couleurs
   cube.py               positions, etat du cube et rotations
@@ -47,7 +54,7 @@ solving/
   search.py             recherche bidirectionnelle
 data/cfop/              tables F2L, OLL et PLL
 tests/core/             tests du solveur
-tools/benchmark.py      benchmark a completer
+rubik_perf              essais et statistiques
 render.py               entree de l'affichage 3D
 rendering/              modules d'affichage 3D
 tests/renderer/         tests de l'affichage 3D
@@ -60,7 +67,6 @@ docs/                   sujet et documentation
 | --- | --- |
 | `make` | Vérifier la syntaxe du solveur |
 | `make test` | Lancer les tests du noyau |
-| `make bench` | Benchmark encore à implémenter |
 | `make check-renderer` | Vérifier la syntaxe de l’affichage 3D |
 | `make test-renderer` | Tester l’affichage 3D |
 | `make clean` | Nettoyer les caches Python |

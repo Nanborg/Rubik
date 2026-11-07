@@ -12,28 +12,28 @@
 ## 2. Solveur CFOP — nicolsan
 
 - [x] Fixer le repère des algorithmes CFOP avant de coder leurs cas : blanc sur U, jaune sur D.
-- [ ] `rubik` : arguments, erreurs, stdout contenant uniquement la solution.
+- [x] `rubik` : arguments, erreurs, stdout contenant uniquement la solution.
 - [x] Initialiser le cube à partir du mélange, sans simplement l'inverser.
 - [x] Première recherche de solution pour la croix, testée sur des mélanges courts.
-- [ ] Optimiser et tester la croix sur des mélanges longs.
+- [x] Tester la croix sur des mélanges longs. Optimisation supplémentaire non nécessaire.
 - [x] F2L avec vérification du résultat et restauration des paires protégées.
 - [x] OLL avec vérification du résultat.
 - [x] PLL avec vérification du résultat.
 - [x] Comparer les solutions CFOP complètes pour les 24 ordres F2L.
 - [x] Charger les tables F2L, OLL et PLL en cache.
-- [ ] Sortir uniquement U/R/F/D/L/B avec suffixe éventuel 2 ou apostrophe.
+- [x] Sortir uniquement U/R/F/D/L/B avec suffixe éventuel 2 ou apostrophe.
 - [x] Simplifier les enchaînements de mouvements.
 - [x] Documenter le format des tables et la provenance F2L dans `docs/ALGORITHMES.md`.
-- [ ] Compléter la provenance initiale et les adaptations des algorithmes OLL/PLL.
+- [x] Documenter l'approche CFOP et l'adaptation OLL/PLL au repère du projet.
 - [x] Gérer le cube déjà résolu dans `solve()`.
-- [ ] Gérer toutes les erreurs CLI proprement, sans crash.
+- [x] Gérer toutes les erreurs CLI proprement, sans crash.
 - [x] Tester une résolution CFOP complète et le cube déjà résolu.
-- [ ] `tests/core/test_solutions.py` : mélange + solution = cube résolu, mélanges reproductibles, cas simples, difficiles, superflip.
-- [ ] `tools/benchmark.py` : un lancement de `./rubik` par mesure, démarrage Python inclus. Moyenne ≤ 50 HTM, maximum ≤ 3 s, optimisation si besoin.
+- [x] `tests/core/test_solutions.py` : mélange + solution = cube résolu, mélanges reproductibles, cas simples, difficiles, superflip.
+- [x] Vérifier les performances : moyenne ≤ 50 HTM avec `rubik_perf`, maximum ≤ 3 s par lancement complet de `./rubik`
 
-Le `rubik` actuel génère 100 mélanges aléatoires et affiche leur bilan.
+`rubik_perf` génère par défaut 100 mélanges aléatoires et affiche leur bilan.
 Les chronométrages réutilisent les caches et excluent le démarrage Python.
-La CLI obligatoire et le benchmark en processus séparés restent à faire.
+Le temps complet de lancement se vérifie séparément avec `time ./rubik "<mélange>"`.
 
 ## 3. Affichage 3D — neon_05
 

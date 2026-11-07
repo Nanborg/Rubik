@@ -28,8 +28,10 @@ Elle doit résoudre la paire et restaurer la croix et les paires protégées.
 
 ## OLL et PLL
 
-Les fichiers utilisent aussi le jaune sur D.
-Leur source initiale et leurs adaptations restent à documenter.
+Le projet suit les étapes de la méthode CFOP.
+L'implémentation, la reconnaissance des cas et les recherches sont propres au projet.
+Les séquences OLL/PLL sont adaptées au repère blanc sur U et jaune sur D.
+La construction des tables vérifie qu'OLL préserve F2L et que PLL préserve OLL.
 
 Le chargement essaie quatre côtés par renommage des faces.
 Aucune rotation x/y/z n’est ajoutée.
