@@ -6,20 +6,24 @@ from solving.cross import is_cross_solved, find_edge, cross_key, solve_cross
 from random import Random
 
 class TestCross(unittest.TestCase):
+    # Verifie la croix du cube resolu
     def test_solved_cube(self):
         self.assertTrue(is_cross_solved(SOLVED))
 
+    # Verifie la detection d'une croix decalee
     def test_misaligned_cross(self):
         state = apply_move(SOLVED, "U")
 
         self.assertFalse(is_cross_solved(state))
 
+    # Verifie la position d'une arete deplacee
     def test_find_moved_edge(self):
         state = apply_move(SOLVED, "F")
         position = find_edge(state, SOLVED[Positions.UF])
 
         self.assertEqual(position, Positions.FR)
 
+    # Verifie les positions et orientations des aretes blanches
     def test_cross_key(self):
         state = apply_move(SOLVED, "F'")
 
@@ -33,6 +37,7 @@ class TestCross(unittest.TestCase):
             ),
         )
 
+    # Verifie la resolution de la croix sans modifier le cube fourni
     def test_solve_cross(self):
         #state = apply_move(SOLVED, "F")
         scrambles = (
@@ -59,6 +64,7 @@ class TestCross(unittest.TestCase):
                 self.assertLessEqual(len(solution), len(scramble))
                 #self.assertEqual(initial, apply_move(SOLVED, "F"))
 
+    # Verifie la croix sur des melanges reproductibles
     def test_random_scrambles(self):
         moves = tuple(
             face + suffix

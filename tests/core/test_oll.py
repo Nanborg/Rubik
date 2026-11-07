@@ -8,11 +8,14 @@ from solving.oll import is_oll_solved, build_oll_table, solve_oll, load_oll_algo
 from pathlib import Path
 
 class TestOLL(unittest.TestCase):
+    # Verifie que le cube resolu satisfait OLL
     def test_solved_cube(self):
         self.assertTrue(is_oll_solved(SOLVED))
+    # Verifie qu'un mouvement D conserve OLL
     def test_last_layer_turn(self):
         state = apply_move(SOLVED, "D")
         self.assertTrue(is_oll_solved(state))
+    # Verifie la detection d'une derniere couche non orientee
     def test_unoriented_last_layer(self):
         state = list(SOLVED)
         for move in ("R", "D", "R'", "D", "R", "D2", "R'"):
@@ -20,6 +23,7 @@ class TestOLL(unittest.TestCase):
         self.assertTrue(is_f2l_solved(state))
         self.assertFalse(is_oll_solved(state))
 
+    # Verifie les sequences OLL depuis les quatre alignements
     def test_solve_oll(self):
         path = Path(__file__).resolve().parents[2] / "data/cfop/oll.txt"
         algorithms = load_oll_algorithms(path)

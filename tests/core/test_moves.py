@@ -4,6 +4,7 @@ import unittest
 from common.moves import simplify_move
 
 class TestMoves(unittest.TestCase):
+    # Verifie les fusions et annulations sans modifier la liste fournie
     def test_simplfy_moves(self):
         cases = (
         ([], []),
