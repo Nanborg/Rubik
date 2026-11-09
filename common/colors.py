@@ -1,7 +1,7 @@
 # TODO(shared): définir les six couleurs avec une classe Enum.
-from enum import Enum
+from enum import IntEnum
 
-class Colors(Enum):
+class Colors(IntEnum):
 	WHITE = 1	# UP
 	YELLOW = 2	# DOWN
 	GREEN = 4	# FRONT
@@ -17,3 +17,12 @@ COLOR_TEXT = {
 	Colors.RED: "\033[38;5;196m",
 	Colors.ORANGE: "\033[38;5;208m"
 	}
+
+FACES = {
+	"U": Colors.WHITE,
+	"D": Colors.YELLOW,
+	"F": Colors.GREEN,
+	"B": Colors.BLUE,
+	"R": Colors.RED,
+	"L": Colors.ORANGE,
+}

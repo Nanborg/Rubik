@@ -169,7 +169,7 @@ def rotate_piece(piece, source, destination, face):
 # Recoit le cube et un mouvment valide
 # Deplace les pieces et reoriente leurs couleurs
 # Renvoie un nouveau cube
-# Ne modifi pas le cube de depart
+# Ne modifie pas le cube de depart
 def apply_move(state, move):
 	face = move[0]
 	turns = quarter_turns(move)
