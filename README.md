@@ -30,6 +30,12 @@ Le temps affiché exclut le démarrage Python et l’affichage.
 
 L’affichage 3D demande Pygame, à installer dans un environnement virtuel.
 
+Pourquoi Pygame :
+- simple et léger, sans moteur 3D complet ;
+- gère la fenêtre, la souris et le dessin des polygones ;
+- la projection 3D du cube est écrite par nous ;
+- optionnel : `./rubik` ne l’utilise jamais.
+
 ```sh
 python3 -m venv .venv
 source .venv/bin/activate
