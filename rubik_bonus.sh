@@ -2,14 +2,13 @@
 # Demande un melange, montre le melange, puis propose la resolution
 cd "$(dirname "$0")" || exit 1
 
-# Utilise le .venv du projet s'il existe
-python=python3
-[ -x .venv/bin/python3 ] && python=.venv/bin/python3
+# Utilise le .venv du projet, le cree avec pygame s'il manque
+python=.venv/bin/python3
 # Masque le message d'accueil de pygame
 export PYGAME_HIDE_SUPPORT_PROMPT=1
 if ! $python -c "import pygame" 2>/dev/null; then
-    echo "Erreur : pygame manquant (pip install pygame dans .venv)" >&2
-    exit 1
+    echo "Installation de pygame dans .venv..."
+    python3 -m venv .venv && $python -m pip install -q pygame || exit 1
 fi
 
 printf "Melange : "
