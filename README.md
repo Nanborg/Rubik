@@ -26,12 +26,30 @@ Il détaille le premier, puis affiche les mouvements moyens et le temps moyen.
 Le premier calcul charge les tables. Les suivants réutilisent les caches.
 Le temps affiché exclut le démarrage Python et l’affichage.
 
+## Visualiser une résolution (bonus)
+
+L’affichage 3D demande Pygame, à installer dans un environnement virtuel.
+
+```sh
+python3 -m venv .venv
+source .venv/bin/activate
+pip install pygame
+```
+
+Le rendu part du mélange en argument et anime les mouvements reçus sur stdin :
+
+```sh
+./rubik "R U F2" | python render.py "R U F2"
+```
+
+Clic gauche maintenu pour tourner la caméra.
+
 ## État du projet
 
 - Croix, F2L, OLL et PLL implémentés.
 - Tables F2L, OLL et PLL chargées en cache.
 - Comparaison des 24 ordres F2L sur le total CFOP simplifié.
-- Affichage 3D avec Pygame en développement, indépendant du solveur.
+- Affichage 3D avec Pygame : cube animé et caméra orbitale, indépendant du solveur.
 
 L’entrée `./rubik "<mélange>"` et la gestion des erreurs sont implémentées.
 Le sujet demande une moyenne ≤ 50 HTM et un temps maximal ≤ 3 secondes.

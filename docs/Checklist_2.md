@@ -39,16 +39,16 @@ Le temps complet de lancement se vérifie séparément avec `time ./rubik "<mél
 
 - [x] Commencer un prototype avec Pygame.
 - [ ] Justifier le choix de la bibliothèque graphique.
-- [ ] `render.py` : mélange initial, instructions sur stdin, vitesse et délai.
-- [ ] Cube 3D statique : cubies et stickers aux bonnes couleurs.
-- [ ] Caméra orbitale.
-- [ ] Animation des couches sans dérive de l'état logique.
+- [x] `render.py` : mélange initial, instructions sur stdin, vitesse (`-s=`) et délai (`-d=`).
+- [x] Cube 3D statique : cubies et stickers aux bonnes couleurs.
+- [x] Caméra orbitale à la souris.
+- [x] Animation des couches sans dérive de l'état logique.
 - [ ] Lecture d'une solution : pause, reprise, pas suivant/précédent, retour au début.
-- [ ] Signaler les entrées invalides.
+- [ ] Signaler les entrées invalides : un mouvement invalide sur stdin fait planter `render.py`.
 - [ ] `tests/renderer/` : tests de l'affichage 3D.
 
 ## 4. Fin de projet — ensemble
 
-- [ ] Vérifier le parcours `rubik` → fichier de solution → `render.py`.
+- [x] Vérifier le parcours `rubik` → `render.py` (solution envoyée sur stdin).
 - [ ] Tester depuis un clone propre sur la machine de l'école.
 - [ ] Chacun sait expliquer le modèle, les mouvements, l'algorithme et l'affichage 3D.
