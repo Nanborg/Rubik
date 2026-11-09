@@ -1,1 +1,0 @@
-# Solver CFOP — Neon.
