@@ -3,8 +3,7 @@
 # TODO(nicolsan): lire l’état initial, les mouvements sur stdin et les options du rendu bonus.
 import pygame
 from common.colors import Colors, FACES
-from common.cube import Positions as pos, apply_move
-from common.moves import SOLVED
+from common.cube import Positions as pos, apply_move, SOLVED
 from math import cos, sin, pi
 import sys
 from copy import deepcopy
