@@ -1,4 +1,3 @@
-# TODO(shared): appliquer les mouvements et vérifier si le cube est résolu.
 from enum import IntEnum
 from common.colors import Colors, COLOR_TEXT
 from common.moves import quarter_turns
@@ -111,22 +110,22 @@ FACE_CYCLES = {
 	 (Positions.DF, Positions.DL, Positions.DB, Positions.DR),
 	 (Positions.DFR, Positions.DLF, Positions.DBL, Positions.DRB)
 	),
-    "L": (
-        (Positions.UL, Positions.BL, Positions.DL, Positions.FL),
-        (Positions.UFL, Positions.ULB, Positions.DBL, Positions.DLF),
-    ),
-    "R": (
-        (Positions.UR, Positions.FR, Positions.DR, Positions.BR),
-        (Positions.URF, Positions.DFR, Positions.DRB, Positions.UBR),
-    ),
-    "F": (
-        (Positions.UF, Positions.FL, Positions.DF, Positions.FR),
-        (Positions.URF, Positions.UFL, Positions.DLF, Positions.DFR),
-    ),
-    "B": (
-        (Positions.UB, Positions.BR, Positions.DB, Positions.BL),
-        (Positions.UBR, Positions.DRB, Positions.DBL, Positions.ULB),
-    ),
+	"L": (
+		(Positions.UL, Positions.BL, Positions.DL, Positions.FL),
+		(Positions.UFL, Positions.ULB, Positions.DBL, Positions.DLF),
+	),
+	"R": (
+		(Positions.UR, Positions.FR, Positions.DR, Positions.BR),
+		(Positions.URF, Positions.DFR, Positions.DRB, Positions.UBR),
+	),
+	"F": (
+		(Positions.UF, Positions.FL, Positions.DF, Positions.FR),
+		(Positions.URF, Positions.UFL, Positions.DLF, Positions.DFR),
+	),
+	"B": (
+		(Positions.UB, Positions.BR, Positions.DB, Positions.BL),
+		(Positions.UBR, Positions.DRB, Positions.DBL, Positions.ULB),
+	),
 }
 
 POSITION_FACE = (

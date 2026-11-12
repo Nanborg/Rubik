@@ -7,8 +7,8 @@ python=.venv/bin/python3
 # Masque le message d'accueil de pygame
 export PYGAME_HIDE_SUPPORT_PROMPT=1
 if ! $python -c "import pygame" 2>/dev/null; then
-    echo "Installation de pygame dans .venv..."
-    python3 -m venv .venv && $python -m pip install -q pygame || exit 1
+	echo "Installation de pygame dans .venv..."
+	python3 -m venv .venv && $python -m pip install -q pygame || exit 1
 fi
 
 printf "Melange : "
@@ -26,8 +26,8 @@ printf "Voulez-vous voir la solution ? (y/n) "
 read answer
 
 if [ "$answer" = "y" ]; then
-    echo "Solution : $solution"
-    # Cube melange -> cube propre
-    echo "$solution" | $python render.py "$scramble"
+	echo "Solution : $solution"
+	# Cube melange -> cube propre
+	echo "$solution" | $python render.py "$scramble"
 fi
 wait

@@ -14,7 +14,7 @@ parser.add_argument("--length", type=int, default=20, help="mouvements par melan
 args = parser.parse_args()
 
 if args.count < 1 or args.length < 1:
-    parser.error("--count et --length doivent etre positifs")
+	parser.error("--count et --length doivent etre positifs")
 
 count = args.count
 length = args.length
@@ -26,7 +26,7 @@ solution, steps = solve(moves, with_steps=True)
 elapsed = perf_counter() - start
 
 for name, stage_moves in steps:
-    print(f"{name} : {len(stage_moves)} mouvements")
+	print(f"{name} : {len(stage_moves)} mouvements")
 
 print(f"\nTotal : {len(solution)} mouvements")
 print(f"Temps : {elapsed:.3f} s")
@@ -37,11 +37,11 @@ total_time = elapsed
 
 print(f"\nCalcul de la moyenne sur {count} melanges...", flush=True)
 for _ in range(count - 1):
-    moves = random_scramble(length)
-    start = perf_counter()
-    solution = solve(moves)
-    total_time += perf_counter() - start
-    total_moves += len(solution)
+	moves = random_scramble(length)
+	start = perf_counter()
+	solution = solve(moves)
+	total_time += perf_counter() - start
+	total_moves += len(solution)
 
 print(f"\nMelanges testes : {count}")
 print(f"Mouvements moyens : {total_moves / count:.2f}")

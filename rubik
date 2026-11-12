@@ -8,19 +8,19 @@ from solving.cfop import solve
 
 
 if len(argv) != 2:
-    print('Usage : ./rubik "<melange>"', file=stderr)
-    raise SystemExit(1)
+	print('Usage : ./rubik "<melange>"', file=stderr)
+	raise SystemExit(1)
 
 try:
-    moves = parse_moves(argv[1])
+	moves = parse_moves(argv[1])
 except ValueError as error:
-    print(f"Erreur : {error}", file=stderr)
-    raise SystemExit(1)
+	print(f"Erreur : {error}", file=stderr)
+	raise SystemExit(1)
 
 try:
-    solution = solve(moves)
+	solution = solve(moves)
 except Exception as error:
-    print(f"Erreur de resolution : {error}", file=stderr)
-    raise SystemExit(2)
+	print(f"Erreur de resolution : {error}", file=stderr)
+	raise SystemExit(2)
 
 print(" ".join(solution))
